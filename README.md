@@ -4,6 +4,15 @@
 
 This project is a python implementation for Lox. Read more at <https://craftinginterpreters.com>
 
+## Structure
+
+Since we're implementing this in Python, the structure will be a little bit different. 
+For example, the main class is called Yaplox, and not Lox as in the original implementation.
+
+### Files
+
+- `lox/Lox.java` is called `yaplox/yaplox.py`
+
 ## Poetry
 
 This project uses `poetry` to manage dependencies. Some commands:
@@ -45,6 +54,3 @@ poetry show --tree
 ```
 
 It's possible to add `-D` to hide the development dependencies.
-
-
-

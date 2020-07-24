@@ -5,8 +5,11 @@ description = "YaPlox - Yet Another Python implementation for Lox"
 authors = ["Roel Adriaans <roel@adriaans.org>"]
 readme = "README.md"
 
+
 [tool.poetry.dependencies]
 python = "^3.8"
+structlog = "^20.1.0"
+colorama = "^0.4.3"
 
 
 [tool.poetry.dev-dependencies]
@@ -17,9 +20,10 @@ pytest-mock = "^3.2.0"
 lxml = "^4.5.2"
 
 
+[tool.poetry.scripts]
+yaplox = "yaplox.yaplox:Yaplox.main"
+
+
 [build-system]
 requires = ["poetry>=0.12"]
 build-backend = "poetry.masonry.api"
-
-[tool.poetry.scripts]
-yaplox = "yaplox.yaplox:Yaplox.main"

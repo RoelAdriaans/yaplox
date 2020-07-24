@@ -1,20 +1,32 @@
 import sys
 
+from structlog import get_logger
+
+logger = get_logger()
+
 
 class Yaplox:
+    @staticmethod
+    def run(source):
+        logger.debug("Running line", source=source)
+
     @staticmethod
     def run_file(file):
         """
         Run yaplox with `file` as source input
         """
-        print(f"Running file {file}")
+        with open(file) as f:
+            content = f.readlines()
+            Yaplox.run(content)
 
     @staticmethod
     def run_prompt():
         """
         Run a REPL prompt
         """
-        print("Running Prompt")
+        while True:
+            str_input = input("> ")
+
 
     @staticmethod
     def main():
