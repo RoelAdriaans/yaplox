@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "yaplox"
+version = "0.0.1"
+description = "YaPlox - Yet Another Python implementation for Lox"
+authors = ["Roel Adriaans <roel@adriaans.org>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+
+[tool.poetry.dev-dependencies]
+pytest = "^5.2"
+tox = "^3.18.0"
+pytest-coverage = "^0.0"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
+
+[tool.poetry.scripts]
+yaplox = "yaplox.yaplox:Yaplox.main"
