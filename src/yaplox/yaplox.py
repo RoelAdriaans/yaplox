@@ -1,32 +1,70 @@
 import sys
 
 from structlog import get_logger
+from yaplox.scanner import Scanner
+from yaplox.__version__ import __VERSION__
 
 logger = get_logger()
 
 
 class Yaplox:
-    @staticmethod
-    def run(source):
+    def __init__(self):
+        self.had_error: bool = False
+
+    def run(self, source: str):
         logger.debug("Running line", source=source)
 
-    @staticmethod
-    def run_file(file):
+        scanner = Scanner(source)
+        tokens = scanner.scan_tokens()
+
+        for token in tokens:
+            logger.info(token=token)
+
+    def error(self, line: int, message: str):
+        self.report(line, "", message)
+
+    def report(self, line: int, where: str, message: str):
+        message = f"[line {line}] Error {where} : {message}"
+        logger.warning(message)
+        self.had_error = True
+
+    def run_file(self, file: str):
         """
-        Run yaplox with `file` as source input
+        Run yaplox with `file` as filename for the source input
         """
         with open(file) as f:
             content = f.readlines()
-            Yaplox.run(content)
+            lines = "\n".join(content)
+            self.run(lines)
 
-    @staticmethod
-    def run_prompt():
+            # Indicate an error in the exit code
+            if self.had_error:
+                sys.exit(65)
+
+    def run_prompt(self):
         """
-        Run a REPL prompt
+        Run a REPL prompt. This prompt can be quit by pressing CTRL-C or CTRL-D
         """
+        print(f"Welcome to Yaplox {__VERSION__}")
+        print("Press CTRL-C or CTRL-D to exit")
+
         while True:
-            str_input = input("> ")
+            try:
+                str_input = input("> ")
+                if str_input[0] == chr(4):
+                    # Catch ctrl-D
+                    self.quit_gracefully()
 
+                self.run(str_input)
+                self.had_error = False
+
+            except KeyboardInterrupt:
+                # Catch CTRL-C
+                self.quit_gracefully()
+
+    def quit_gracefully(self):
+        print("So Long, and Thanks for All the Fish")
+        sys.exit(0)
 
     @staticmethod
     def main():
@@ -39,6 +77,6 @@ class Yaplox:
             print(f"Usage: {sys.argv[0]} [script]")
             sys.exit(64)
         elif len(sys.argv) == 2:
-            Yaplox.run_file(sys.argv[1])
+            Yaplox().run_file(sys.argv[1])
         else:
-            Yaplox.run_prompt()
+            Yaplox().run_prompt()

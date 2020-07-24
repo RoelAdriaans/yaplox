@@ -9,11 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Completing to chapter 4
+- Completing chapter 4
+- Completed up to chapter 4.2.3
 - Created CHANGELOG.md, README.md, STATUS.md
 - Created first structure of the project, including tox, flake8, mypy, black and
   other utilities
 - Implemented `run`, `run_file` and `run_prompt` methods
+- Added `Token`, `Scanner`, `TokenType`
 
 ## [0.0.1] - 2020-00-00
 
