@@ -1,5 +1,6 @@
 from typing import Iterable
 
+
 class Scanner:
     def __init__(self, source):
         ...

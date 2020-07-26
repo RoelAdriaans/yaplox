@@ -6,6 +6,7 @@ class TokenType(enum.Enum):
     Tokens that are used in the Language. The mapping from Enum to character
     will be done in the scanner.
     """
+
     #
     # Single - character tokens.
     #

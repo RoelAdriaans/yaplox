@@ -1,4 +1,5 @@
 from typing import Any
+
 from yaplox.token_type import TokenType
 
 

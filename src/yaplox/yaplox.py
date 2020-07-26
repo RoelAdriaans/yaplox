@@ -1,8 +1,9 @@
 import sys
 
 from structlog import get_logger
-from yaplox.scanner import Scanner
+
 from yaplox.__version__ import __VERSION__
+from yaplox.scanner import Scanner
 
 logger = get_logger()
 
