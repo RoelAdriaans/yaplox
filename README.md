@@ -6,7 +6,7 @@ This project is a python implementation for Lox. Read more at <https://craftingi
 
 ## Structure
 
-Since we're implementing this in Python, the structure will be a little bit different. 
+Since we're implementing this in Python, the structure will be a little bit different.
 For example, the main class is called Yaplox, and not Lox as in the original implementation.
 
 ### Files

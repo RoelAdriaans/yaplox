@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Completing chapter 4
-- Completed up to chapter 4.2.3
+- Completed up to chapter 4.5.1
 - Created CHANGELOG.md, README.md, STATUS.md
 - Created first structure of the project, including tox, flake8, mypy, black and
   other utilities

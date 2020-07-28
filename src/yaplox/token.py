@@ -12,14 +12,6 @@ class Token:
         """
         Create a new Token. In the Lox documentation `token_type` is called `type`.
         It has been renamed since `type` is a reserved keyword
-        :param token_type:
-        :type token_type:
-        :param lexeme:
-        :type lexeme:
-        :param literal:
-        :type literal:
-        :param line:
-        :type line:
         """
         self.token_type = token_type
         self.lexeme = lexeme
