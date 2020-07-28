@@ -1,6 +1,7 @@
-from typing import List, Any
-from yaplox.token_type import TokenType
+from typing import Any, List
+
 from yaplox.token import Token
+from yaplox.token_type import TokenType
 
 
 class Scanner:
@@ -9,9 +10,14 @@ class Scanner:
     current: int = 0
     line: int = 1
 
-    def __init__(self, source: str, yaplox: "Yaplox"):
+    def __init__(self, source: str, on_error=None):
+        """
+        Create a new scanner that will scan the variable 'source'.
+        'on_error' will be called when we encounter an error.
+
+        """
         self.source = source
-        self.yaplox = yaplox
+        self.on_error = on_error
         self.tokens = []
 
     def scan_tokens(self) -> List[Token]:
@@ -50,7 +56,11 @@ class Scanner:
             option = token_options[c]
             option()
         except KeyError:
-            self.yaplox.error(self.line, f"Unexpected character: {c}")
+            # If we have an on_error callback, run this, otherwise raise the error again
+            if self.on_error:
+                self.on_error(self.line, f"Unexpected character: {c}")
+            else:
+                raise
 
     def _is_at_end(self):
         return self.current >= len(self.source)

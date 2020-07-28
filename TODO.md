@@ -7,7 +7,7 @@
 
 ## Medium Priority
 
-- [ ] ...
+- [ ] Find a better solution for 'on_error' callback in the Scanner.__init__ method
 
 ## Low Priority
 

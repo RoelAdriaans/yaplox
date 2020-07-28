@@ -15,7 +15,7 @@ class Yaplox:
     def run(self, source: str):
         logger.debug("Running line", source=source)
 
-        scanner = Scanner(source)
+        scanner = Scanner(source, on_error=self.error)
         tokens = scanner.scan_tokens()
 
         for token in tokens:
