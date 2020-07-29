@@ -51,6 +51,18 @@ class Scanner:
             "+": lambda: self._add_token(TokenType.PLUS),
             ";": lambda: self._add_token(TokenType.SEMICOLON),
             "*": lambda: self._add_token(TokenType.STAR),
+            "!": lambda: self._add_token(
+                TokenType.BANG_EQUAL if self._match("=") else TokenType.BANG
+            ),
+            "=": lambda: self._add_token(
+                TokenType.EQUAL_EQUAL if self._match("=") else TokenType.EQUAL
+            ),
+            "<": lambda: self._add_token(
+                TokenType.LESS_EQUAL if self._match("=") else TokenType.LESS
+            ),
+            ">": lambda: self._add_token(
+                TokenType.GREATER_EQUAL if self._match("=") else TokenType.GREATER
+            ),
         }
         try:
             option = token_options[c]
@@ -75,9 +87,21 @@ class Scanner:
         literal parameter beeing there, or not. Because python doesn't have this
         construct the overloading is handled in the method itself. As it turns out,
         this is just the default value of '=None' for the 'literal' keyword.
+
+        @TODO Define 'literal' better, Any is probably too boad
         """
         text = self.source[self.start : self.current]
 
         self.tokens.append(
             Token(token_type=token_type, lexeme=text, literal=literal, line=self.line)
         )
+
+    def _match(self, expected: str):
+        if self._is_at_end():
+            return False
+        if self.source[self.current] != expected:
+            return False
+
+        self.current += 1
+
+        return True

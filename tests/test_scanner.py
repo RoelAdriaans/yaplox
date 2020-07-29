@@ -21,6 +21,33 @@ class TestScanner:
         # There musn't be an error
         assert not on_error_mock.called
 
+    @pytest.mark.parametrize(
+        ("source", "expected_output_list"),
+        [
+            ("+-*", [TokenType.PLUS, TokenType.MINUS, TokenType.STAR, TokenType.EOF]),
+            ("!=", [TokenType.BANG_EQUAL, TokenType.EOF]),
+            ("!", [TokenType.BANG, TokenType.EOF]),
+            ("==", [TokenType.EQUAL_EQUAL, TokenType.EOF]),
+            ("=", [TokenType.EQUAL, TokenType.EOF]),
+            ("===", [TokenType.EQUAL_EQUAL, TokenType.EQUAL, TokenType.EOF]),
+            (">", [TokenType.GREATER, TokenType.EOF]),
+            (">=", [TokenType.GREATER_EQUAL, TokenType.EOF]),
+            ("<", [TokenType.LESS, TokenType.EOF]),
+            ("<=", [TokenType.LESS_EQUAL, TokenType.EOF]),
+        ],
+    )
+    def test_scanner_operator(self, source, expected_output_list, mocker):
+        on_error_mock = mocker.MagicMock()
+
+        scanner = Scanner(source, on_error=on_error_mock)
+        tokens = scanner.scan_tokens()
+
+        # Retrieve the token_types from the created tokens
+        token_types = [token.token_type for token in tokens]
+
+        assert token_types == expected_output_list
+        assert not on_error_mock.called
+
     def test_scanner_bad_char(self, mocker):
         source = "@"
         on_error_mock = mocker.MagicMock()
