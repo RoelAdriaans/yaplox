@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, Callable, Dict, List
 
 from yaplox.token import Token
 from yaplox.token_type import TokenType
@@ -32,6 +32,35 @@ class Scanner:
 
         return self.tokens
 
+    def _operator_slash(self):
+        if self._match("/"):
+            # A comment goes until the the of the line
+            while self._peek() != "\n" and not self._is_at_end():
+                self._advance()
+        else:
+            self._add_token(TokenType.SLASH)
+
+    def _operator_newline(self):
+        self.line += 1
+
+    def _string(self):
+        while self._peek() != '"' and not self._is_at_end():
+            if self._peek() == "\n":
+                self.line += 1
+            self._advance()
+
+        # Unterminated string
+        if self._is_at_end():
+            self.on_error(self.line, "Unterminated string.")
+            return
+
+        # The closing "
+        self._advance()
+
+        # Trim the surrounding "
+        string_value = self.source[self.start + 1 : self.current - 1]
+        self._add_token(TokenType.STRING, string_value)
+
     def _scan_token(self):
         """ Scan tokens"""
         c = self._advance()
@@ -63,7 +92,17 @@ class Scanner:
             ">": lambda: self._add_token(
                 TokenType.GREATER_EQUAL if self._match("=") else TokenType.GREATER
             ),
-        }
+            "/": self._operator_slash,
+            # These statements do nothing and are ignored. Since we need something that
+            # is callable, a empty callable is returned. This is a little bit faster
+            # than calling `lambda: None`
+            " ": type(None),
+            "\r": type(None),
+            "\t": type(None),
+            "\n": self._operator_newline,
+            '"': self._string,
+        }  # type: Dict[str, Callable]
+
         try:
             option = token_options[c]
             option()
@@ -80,6 +119,11 @@ class Scanner:
     def _advance(self):
         self.current += 1
         return self.source[self.current - 1]
+
+    def _peek(self):
+        if self._is_at_end():
+            return "\0"
+        return self.source[self.current]
 
     def _add_token(self, token_type: TokenType, literal: Any = None):
         """
