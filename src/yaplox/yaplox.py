@@ -19,7 +19,7 @@ class Yaplox:
         tokens = scanner.scan_tokens()
 
         for token in tokens:
-            logger.info(token=token)
+            logger.info("Running token", token=token)
 
     def error(self, line: int, message: str):
         self.report(line, "", message)
@@ -29,18 +29,23 @@ class Yaplox:
         logger.warning(message)
         self.had_error = True
 
+    @staticmethod
+    def _load_file(file: str) -> str:
+        with open(file) as f:
+            content = f.readlines()
+            lines = "\n".join(content)
+            return lines
+
     def run_file(self, file: str):
         """
         Run yaplox with `file` as filename for the source input
         """
-        with open(file) as f:
-            content = f.readlines()
-            lines = "\n".join(content)
-            self.run(lines)
+        lines = self._load_file(file)
+        self.run(lines)
 
-            # Indicate an error in the exit code
-            if self.had_error:
-                sys.exit(65)
+        # Indicate an error in the exit code
+        if self.had_error:
+            sys.exit(65)
 
     def run_prompt(self):
         """
