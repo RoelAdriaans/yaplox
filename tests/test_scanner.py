@@ -152,7 +152,7 @@ class TestScanner:
         assert scanner.line == 3
 
     def test_scanner_with_number(self, mocker):
-        source = "123 12.23 3+5"
+        source = "123 12.23 3+5 13."
 
         on_error_mock = mocker.MagicMock()
         scanner = Scanner(source, on_error=on_error_mock)
@@ -171,5 +171,8 @@ class TestScanner:
 
         assert tokens[4].token_type == TokenType.NUMBER
         assert tokens[4].literal == 5.0
+
+        assert tokens[5].token_type == TokenType.NUMBER
+        assert tokens[5].literal == 13.0
 
         assert not on_error_mock.called
