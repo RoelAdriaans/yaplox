@@ -39,7 +39,32 @@ Install the project with the command
 poetry install
 ```
 
-### Other usefull commands
+### Pre-commit
+
+This project uses [pre-commit]. Pre-commit runs all the required tools before committing.
+This useful tool will be installed with `poetry install`, or manually with
+
+```shell
+pip install pre-commit
+```
+
+After installation run:
+
+```shell
+pre-commit install
+```
+
+Now every time before running `git commit` the hooks defined in the
+`.pre-commit-config.yaml` file will be run before actually committing.
+To run this manually, run:
+
+```shell
+pre-commit run --all-files
+```
+
+[pre-commit]: https://pre-commit.com/
+
+### Other useful commands
 
 Update packages:
 

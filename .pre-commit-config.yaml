@@ -1,0 +1,24 @@
+# See README for installation instructions.
+# This configuration will run all linters in a virtualenv as configured in tox.ini before committing to Git.
+repos:
+  - repo: local
+    hooks:
+      - id: linters
+        name: linters
+        entry: tox -e linters
+        language: python
+        additional_dependencies: [tox]
+        types: [python]
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.2.0
+    hooks:
+    - id: check-yaml
+    - id: end-of-file-fixer
+    - id: trailing-whitespace
+    - id: check-ast
+    - id: check-case-conflict
+    - id: check-merge-conflict
+    - id: debug-statements
+      language_version: python3
+
+    - id: trailing-whitespace
