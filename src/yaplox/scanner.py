@@ -61,6 +61,21 @@ class Scanner:
         string_value = self.source[self.start + 1 : self.current - 1]
         self._add_token(TokenType.STRING, string_value)
 
+    def _number(self):
+        while self._peek().isdigit():
+            self._advance()
+
+        # Look for a fractional part
+        if self._peek() == "." and self._peek_next().isdigit():
+            # Consume the '.'
+            self._advance()
+            # Consume the fraction
+            while self._peek().isdigit():
+                self._advance()
+
+        number_value = self.source[self.start : self.current]
+        self._add_token(TokenType.NUMBER, float(number_value))
+
     def _scan_token(self):
         """ Scan tokens"""
         c = self._advance()
@@ -107,8 +122,12 @@ class Scanner:
             option = token_options[c]
             option()
         except KeyError:
+            # This is the 'default' case in the Java switch statement
+            if c.isdigit():
+                # An digit encountered, consume the number
+                self._number()
             # If we have an on_error callback, run this, otherwise raise the error again
-            if self.on_error:
+            elif self.on_error:
                 self.on_error(self.line, f"Unexpected character: {c}")
             else:
                 raise
@@ -124,6 +143,11 @@ class Scanner:
         if self._is_at_end():
             return "\0"
         return self.source[self.current]
+
+    def _peek_next(self):
+        if self.current + 1 >= len(self.source):
+            return "\0"
+        return self.source[self.current + 1]
 
     def _add_token(self, token_type: TokenType, literal: Any = None):
         """

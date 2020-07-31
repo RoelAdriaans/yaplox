@@ -150,3 +150,26 @@ class TestScanner:
 
         # We have traveled three lines
         assert scanner.line == 3
+
+    def test_scanner_with_number(self, mocker):
+        source = "123 12.23 3+5"
+
+        on_error_mock = mocker.MagicMock()
+        scanner = Scanner(source, on_error=on_error_mock)
+
+        tokens = scanner.scan_tokens()
+        assert tokens[0].token_type == TokenType.NUMBER
+        assert tokens[0].literal == 123.0
+
+        assert tokens[1].token_type == TokenType.NUMBER
+        assert tokens[1].literal == 12.23
+
+        assert tokens[2].token_type == TokenType.NUMBER
+        assert tokens[2].literal == 3.0
+
+        assert tokens[3].token_type == TokenType.PLUS
+
+        assert tokens[4].token_type == TokenType.NUMBER
+        assert tokens[4].literal == 5.0
+
+        assert not on_error_mock.called
