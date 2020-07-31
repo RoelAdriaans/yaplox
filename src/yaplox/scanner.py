@@ -132,7 +132,7 @@ class Scanner:
         construct the overloading is handled in the method itself. As it turns out,
         this is just the default value of '=None' for the 'literal' keyword.
 
-        @TODO Define 'literal' better, Any is probably too boad
+        @TODO Define 'literal' better, Any is probably too broad
         """
         text = self.source[self.start : self.current]
 
