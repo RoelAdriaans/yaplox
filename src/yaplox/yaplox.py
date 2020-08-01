@@ -58,14 +58,14 @@ class Yaplox:
             try:
                 str_input = input("> ")
                 if str_input[0] == chr(4):
-                    # Catch ctrl-D
-                    self.quit_gracefully()
+                    # Catch ctrl-D and raise as error
+                    raise EOFError
 
                 self.run(str_input)
                 self.had_error = False
 
-            except KeyboardInterrupt:
-                # Catch CTRL-C
+            except (KeyboardInterrupt, EOFError):
+                # Catch CTRL-C or CTRL-D (EOF)
                 self.quit_gracefully()
 
     def quit_gracefully(self):

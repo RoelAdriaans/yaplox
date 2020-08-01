@@ -12,6 +12,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Completing chapter 5
 - Completed including chapter 5.
 
+### Fixed
+
+- CTRL-D now works on OSX terminal
+- Refactor: Exit method is called in a single place
+
 ## [0.0.1] - 2020-08-01
 
 ### Added
