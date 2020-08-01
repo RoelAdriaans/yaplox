@@ -9,6 +9,24 @@ class Scanner:
     start: int = 0
     current: int = 0
     line: int = 1
+    keywords = {
+        "and": TokenType.AND,
+        "class": TokenType.CLASS,
+        "else": TokenType.ELSE,
+        "false": TokenType.FALSE,
+        "for": TokenType.FOR,
+        "fun": TokenType.FUN,
+        "if": TokenType.IF,
+        "nil": TokenType.NIL,
+        "or": TokenType.OR,
+        "print": TokenType.PRINT,
+        "return": TokenType.RETURN,
+        "super": TokenType.SUPER,
+        "this": TokenType.THIS,
+        "true": TokenType.TRUE,
+        "var": TokenType.VAR,
+        "while": TokenType.WHILE,
+    }
 
     def __init__(self, source: str, on_error=None):
         """
@@ -76,6 +94,16 @@ class Scanner:
         number_value = self.source[self.start : self.current]
         self._add_token(TokenType.NUMBER, float(number_value))
 
+    def _identifier(self):
+        while self._peek().isalnum() or self._peek() == "_":
+            self._advance()
+
+        # See if the identifier is a reserved word
+        text = self.source[self.start : self.current]
+        token_type = self.keywords.get(text, TokenType.IDENTIFIER)
+
+        self._add_token(token_type=token_type)
+
     def _scan_token(self):
         """ Scan tokens"""
         c = self._advance()
@@ -126,8 +154,12 @@ class Scanner:
             if c.isdigit():
                 # An digit encountered, consume the number
                 self._number()
-            # If we have an on_error callback, run this, otherwise raise the error again
+            elif c.isalpha() or c == "_":
+                # An letter encoutered
+                self._identifier()
             elif self.on_error:
+                # If we have an on_error callback, run this, otherwise raise the
+                # error again
                 self.on_error(self.line, f"Unexpected character: {c}")
             else:
                 raise

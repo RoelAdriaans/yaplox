@@ -176,3 +176,59 @@ class TestScanner:
         assert tokens[5].literal == 13.0
 
         assert not on_error_mock.called
+
+    def test_scanner_identifier(self, mocker):
+        source = "appelflap or nil if while _foo_bar_1_2"
+
+        on_error_mock = mocker.MagicMock()
+        scanner = Scanner(source, on_error=on_error_mock)
+
+        tokens = scanner.scan_tokens()
+
+        assert tokens[0].token_type == TokenType.IDENTIFIER
+        assert tokens[0].lexeme == "appelflap"
+
+        assert tokens[1].token_type == TokenType.OR
+        assert tokens[2].token_type == TokenType.NIL
+        assert tokens[3].token_type == TokenType.IF
+        assert tokens[4].token_type == TokenType.WHILE
+
+        assert tokens[5].token_type == TokenType.IDENTIFIER
+        assert tokens[5].lexeme == "_foo_bar_1_2"
+
+        assert not on_error_mock.called
+
+    def test_scanner_invalid_identifier(self, mocker):
+        # The bit of source code below is completely wrong, and identifies and
+        # numbers in here will not result in valid tokens, but not the tokens you
+        # would expect. This is not a problem of the scanner, it just does as it's
+        # told.
+        source = "123foo_bar bar-stool spam_egg_1.3_chickens"
+
+        on_error_mock = mocker.MagicMock()
+        scanner = Scanner(source, on_error=on_error_mock)
+
+        tokens = scanner.scan_tokens()
+
+        assert tokens[0].literal == 123.0
+
+        assert tokens[1].lexeme == "foo_bar"
+        assert tokens[1].token_type == TokenType.IDENTIFIER
+
+        assert tokens[2].lexeme == "bar"
+        assert tokens[2].token_type == TokenType.IDENTIFIER
+
+        assert tokens[3].token_type == TokenType.MINUS
+
+        assert tokens[4].lexeme == "stool"
+        assert tokens[5].lexeme == "spam_egg_1"
+        assert tokens[6].token_type == TokenType.DOT
+
+        # This token did not consume the 1 before, since that was still part of the
+        # valid identifier. The dot broke the identifier, and then a number started
+        assert tokens[7].token_type == TokenType.NUMBER
+        assert tokens[7].literal == 3.0
+
+        assert tokens[8].lexeme == "_chickens"
+
+        assert not on_error_mock.called
