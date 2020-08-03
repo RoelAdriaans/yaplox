@@ -10,7 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Completing chapter 5
-- Completed including chapter 5.
+- Completed including chapter 5.2.2
+- Created `tools/generate_ast.py`
 
 ### Fixed
 
