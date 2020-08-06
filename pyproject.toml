@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "yaplox"
-version = "0.0.2"
+version = "0.0.3"
 description = "YaPlox - Yet Another Python implementation for Lox"
 authors = ["Roel Adriaans <roel@adriaans.org>"]
 readme = "README.md"
