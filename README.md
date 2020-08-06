@@ -78,4 +78,4 @@ Show installed packages:
 poetry show --tree
 ```
 
-It's possible to add `-D` to hide the development dependencies.
+It's possible to add `--no-dev` to hide the development dependencies.
