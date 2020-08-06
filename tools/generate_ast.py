@@ -50,7 +50,14 @@ class GenerateAst:
         ]
         lines.extend(self._define_visitor(base_name, types))
 
-        lines.extend([f"class {base_name}(ABC):", "    ...", ""])
+        lines.extend(
+            [
+                f"class {base_name}(ABC):",
+                "    @abstractmethod",
+                "    def accept(self, visitor: ExprVisitor):",
+                "        raise NotImplementedError",
+            ]
+        )
 
         for class_type in types:
             class_name = class_type.split(":")[0].strip()
@@ -73,7 +80,7 @@ class GenerateAst:
                 "    @abstractmethod",
                 f"    def visit_{class_name.lower()}_{base_name.lower()}"
                 f'(self, expr: "{class_name}"):',
-                "        pass",
+                "        raise NotImplementedError",
             ]
             vistor_lines.extend(lines)
 

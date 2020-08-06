@@ -7,15 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2020-08-06
+
 ### Added
 
 - Completing chapter 5
-- Completed including chapter 5.3.3
 - Created `tools/generate_ast.py`, added Visitor class
+- Added the generated `expr.py`
+- Not implemented methods in ABC base classes will raise an `NotImplementedError` that
+  is ignored by coverage tests
 
 ### Fixed
 
-- CTRL-D now works on OSX terminal
+- CTRL-D now works in the OSX terminal
 - Refactor: Exit method is called in a single place
 
 ## [0.0.1] - 2020-08-01
@@ -30,5 +34,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added `Token`, `Scanner`, `TokenType`
 - Support `strings`, `numbers` and `identifiers`
 
-[Unreleased]: https://github.com/RoelAdriaans/yaplox/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/RoelAdriaans/yaplox/compare/v0.0.2...HEAD
+[0.0.2]: https://github.com/RoelAdriaans/yaplox/releases/tag/v0.0.2
 [0.0.1]: https://github.com/RoelAdriaans/yaplox/releases/tag/v0.0.1
