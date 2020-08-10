@@ -21,14 +21,21 @@ class TestMain:
             yaplox = Yaplox()
             yaplox.main()
 
-    def test_main_file_file_arg(self, mocker):
+    def test_main_file_file_arg(self, monkeypatch):
         # Mustn't crash
         # We mock the file loading, that's part of integration testing
-        mocker_load_file = mocker.patch("yaplox.yaplox.Yaplox._load_file")
+
+        @staticmethod
+        def mocked_load_file(file):
+            print("In mocked load file")
+            assert file == "source.lox"
+            return "3+4"
+
+        monkeypatch.setattr(Yaplox, "_load_file", mocked_load_file)
+
         with patch.object(sys, "argv", ["yaplox.py", "source.lox"]):
             yaplox = Yaplox()
             yaplox.main()
-        assert mocker_load_file.called
 
     def test_main_file_too_many_arg(self):
         # Must crash
