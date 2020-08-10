@@ -3,7 +3,11 @@ import sys
 from structlog import get_logger
 
 from yaplox.__version__ import __VERSION__
+from yaplox.ast_printer import AstPrinter
+from yaplox.parser import Parser
 from yaplox.scanner import Scanner
+from yaplox.token import Token
+from yaplox.token_type import TokenType
 
 logger = get_logger()
 
@@ -17,12 +21,27 @@ class Yaplox:
 
         scanner = Scanner(source, on_error=self.error)
         tokens = scanner.scan_tokens()
+        parser = Parser(tokens, on_token_error=self.token_error)
+        expr = parser.parse()
 
         for token in tokens:
-            logger.info("Running token", token=token)
+            logger.debug("Running token", token=token)
+
+        if self.had_error:
+            print("There was a fatal error")
+            return
+
+        ast = AstPrinter().print(expr)
+        logger.debug("Generated ast", ast=ast)
 
     def error(self, line: int, message: str):
         self.report(line, "", message)
+
+    def token_error(self, token: Token, message: str):
+        if token.token_type == TokenType.EOF:
+            self.report(token.line, " At end ", message)
+        else:
+            self.report(token.line, f" at '{token.lexeme}'", message)
 
     def report(self, line: int, where: str, message: str):
         message = f"[line {line}] Error {where} : {message}"
@@ -57,7 +76,7 @@ class Yaplox:
         while True:
             try:
                 str_input = input("> ")
-                if str_input[0] == chr(4):
+                if str_input and str_input[0] == chr(4):
                     # Catch ctrl-D and raise as error
                     raise EOFError
 

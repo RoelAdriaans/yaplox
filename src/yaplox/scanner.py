@@ -32,7 +32,6 @@ class Scanner:
         """
         Create a new scanner that will scan the variable 'source'.
         'on_error' will be called when we encounter an error.
-
         """
         self.source = source
         self.on_error = on_error
