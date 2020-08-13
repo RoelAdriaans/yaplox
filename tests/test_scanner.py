@@ -5,6 +5,9 @@ from yaplox.token_type import TokenType
 
 
 class TestScanner:
+    def test_always_fail(self):
+        assert False
+
     def test_scanner(self, mocker):
         on_error_mock = mocker.MagicMock()
 
@@ -21,7 +24,7 @@ class TestScanner:
         # The newline char (\n) doesn't add a token, but increments the line counter
         assert scanner.line == 2
 
-        # There musn't be an error
+        # There mustn't be an error
         assert not on_error_mock.called
 
     @pytest.mark.parametrize(

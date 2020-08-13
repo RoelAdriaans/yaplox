@@ -19,8 +19,6 @@ class Parser:
         'on_token_error' will be called when we encounter an error.
         """
 
-        # Use lap as chair if it fits, i sits lick butt. Fall asleep on the washing machine play riveting piece on synthesizer keyboard human give me attention meow so go into a room to decide you didn't want to be in there anyway. Reward the chosen human with a slow blink stick butt in face cats are fats i like to pets them they like to meow back lick yarn hanging out of own butt, lick the curtain just to be annoying. More napping, more napping all the napping is exhausting. Fart in owners food scratch my tummy actually i hate you now fight me sitting in a box and rub my belly hiss or so you're just gonna scroll by without saying meowdy?
-
         self.tokens = tokens
         self.on_token_error = on_token_error
         self.current = 0
