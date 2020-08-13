@@ -20,5 +20,8 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install tox tox-gh-actions
+
+    - name: Run linters
+      run: tox -e linters
     - name: Test with tox
-      run: tox
+      run: tox -e py
