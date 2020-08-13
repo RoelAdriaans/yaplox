@@ -2,6 +2,7 @@
 
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 ![Python Run Tox](https://github.com/RoelAdriaans/yaplox/workflows/Python%20Run%20Tox/badge.svg?branch=master)
+[![codecov](https://codecov.io/gh/RoelAdriaans/yaplox/branch/master/graph/badge.svg)](https://codecov.io/gh/RoelAdriaans/yaplox)
 
 This project is a python implementation for Lox. Read more at <https://craftinginterpreters.com>
 
