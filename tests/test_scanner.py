@@ -5,9 +5,6 @@ from yaplox.token_type import TokenType
 
 
 class TestScanner:
-    def test_always_fail(self):
-        assert False
-
     def test_scanner(self, mocker):
         on_error_mock = mocker.MagicMock()
 
