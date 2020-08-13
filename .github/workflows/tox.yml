@@ -11,7 +11,7 @@ jobs:
         python-version: [3.8]
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
@@ -19,9 +19,11 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install tox tox-gh-actions
+        pip install tox poetry
 
-    - name: Run linters
+    - name: Run linters in tox
       run: tox -e linters
+
     - name: Test with tox
+      # Run tox using the version of Python in `PATH`
       run: tox -e py
