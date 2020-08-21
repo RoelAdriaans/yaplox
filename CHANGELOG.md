@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Completing chapter 7
+- Completed upto chapter 7.x.x
+- Added github actions for automated CI, automerge
+- Added badges to the readme
+
 ## [0.0.3] - 2020-08-10
 
 ### Added
