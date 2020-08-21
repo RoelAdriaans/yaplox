@@ -5,6 +5,7 @@ from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
 from yaplox.scanner import Scanner
 from yaplox.token_type import TokenType
+from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
 
 class TestInterpreter:
@@ -51,6 +52,15 @@ class TestInterpreter:
         else:
             assert result == expected
 
+    def test_visit_unary_sad_flow(self, create_token_factory):
+        # -"Foo" Should result in an error
+        token = create_token_factory(token_type=TokenType.MINUS)
+        expr = Unary(token, right=Literal("Foo"))
+        with pytest.raises(YaploxRuntimeError) as excinfo:
+            Interpreter().visit_unary_expr(expr)
+
+        assert "Foo must be a number" in str(excinfo.value)
+
     @pytest.mark.parametrize(
         ("left", "token_type", "right", "expected"),
         [
@@ -95,6 +105,25 @@ class TestInterpreter:
         else:
             assert result == expected
 
+    @pytest.mark.parametrize(
+        ("left", "token_type", "right"),
+        [
+            (10, TokenType.MINUS, "String"),
+            (10, TokenType.GREATER, "Foo"),
+            ("43", TokenType.PLUS, 18),
+            (43, TokenType.PLUS, "18"),
+        ],
+    )
+    def test_binary_expression_failing(
+        self, create_token_factory, left, token_type, right
+    ):
+        operator = create_token_factory(token_type=token_type)
+        expr_left = Literal(left)
+        expr_right = Literal(right)
+        expr = Binary(left=expr_left, operator=operator, right=expr_right)
+        with pytest.raises(YaploxRuntimeError):
+            Interpreter().visit_binary_expr(expr)
+
     def test_nested_binary_expr(self, create_token_factory, mocker):
         """ Test nested binary expressions, 4 * 6 / 2 """
         on_scanner_error_mock = mocker.MagicMock()
@@ -120,3 +149,11 @@ class TestInterpreter:
         result = Interpreter().visit_binary_expr(expr)
 
         assert result == 12
+
+    def test_unknown_operator(self, create_token_factory):
+        operator = create_token_factory(token_type=TokenType.EOF)
+        expr_left = Literal(None)
+        expr_right = Literal(None)
+        expr = Binary(left=expr_left, operator=operator, right=expr_right)
+        with pytest.raises(YaploxRuntimeError):
+            Interpreter().visit_binary_expr(expr)
