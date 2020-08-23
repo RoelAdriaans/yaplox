@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Completing chapter 7
+- Added Interpreter, with tests
+- Created YaploxRuntimeError. Yaplox calls this a RuntimeError,
+but python already defines one.
+- Added github actions for automated CI, automerge
+- Added badges to the readme
+
+
 ## [0.0.3] - 2020-08-10
 
 ### Added
