@@ -4,10 +4,12 @@ from structlog import get_logger
 
 from yaplox.__version__ import __VERSION__
 from yaplox.ast_printer import AstPrinter
+from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
 from yaplox.scanner import Scanner
 from yaplox.token import Token
 from yaplox.token_type import TokenType
+from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
 logger = get_logger()
 
@@ -15,6 +17,8 @@ logger = get_logger()
 class Yaplox:
     def __init__(self):
         self.had_error: bool = False
+        self.had_runtime_error: bool = False
+        self.interpreter: Interpreter = Interpreter()
 
     def run(self, source: str):
         logger.debug("Running line", source=source)
@@ -27,15 +31,17 @@ class Yaplox:
         for token in tokens:
             logger.debug("Running token", token=token)
 
-        if self.had_error:
-            print("There was a fatal error")
-            return
-
         ast = AstPrinter().print(expr)
         logger.debug("Generated ast", ast=ast)
 
+        print(self.interpreter.interpret(expression=expr, on_error=self.runtime_error))
+
     def error(self, line: int, message: str):
         self.report(line, "", message)
+
+    def runtime_error(self, error: YaploxRuntimeError):
+        logger.warning(f"{str(error.message)} in line [line{error.token.line}]")
+        self.had_runtime_error = True
 
     def token_error(self, token: Token, message: str):
         if token.token_type == TokenType.EOF:
@@ -65,6 +71,9 @@ class Yaplox:
         # Indicate an error in the exit code
         if self.had_error:
             sys.exit(65)
+
+        if self.had_runtime_error:
+            sys.exit(70)
 
     def run_prompt(self):
         """

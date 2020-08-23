@@ -1,10 +1,35 @@
+from structlog import get_logger
+
 from yaplox.expr import Any, Binary, Expr, ExprVisitor, Grouping, Literal, Unary
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
+logger = get_logger()
+
 
 class Interpreter(ExprVisitor):
+    def interpret(self, expression: Expr, on_error=None):
+        try:
+            value = self._evaluate(expression)
+            str_value = self._stringify(value)
+            logger.debug("Inteprenter result", value=str_value)
+            return str_value
+
+        except YaploxRuntimeError as excp:
+            on_error(excp)
+
+    @staticmethod
+    def _stringify(obj) -> str:
+        if obj is None:
+            return "nil"
+
+        if isinstance(obj, float):
+            # Remove trailing zero's. No need to make a hack as in Java.
+            return f"{obj:g}"
+
+        return str(obj)
+
     @staticmethod
     def _binary_plus(expr, left, right):
         if isinstance(left, (float, int)) and isinstance(right, (float, int)):

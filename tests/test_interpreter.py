@@ -157,3 +157,40 @@ class TestInterpreter:
         expr = Binary(left=expr_left, operator=operator, right=expr_right)
         with pytest.raises(YaploxRuntimeError):
             Interpreter().visit_binary_expr(expr)
+
+    @pytest.mark.parametrize(
+        ("expression", "result"),
+        [("4 * 6 / 2", "12"), ("12 < 6", "False"), ("12 > 6", "True"), ("3+3", "6")],
+    )
+    def test_interpret(self, mocker, expression, result):
+        on_scanner_error_mock = mocker.MagicMock()
+        on_parser_error_mock = mocker.MagicMock()
+
+        scanner = Scanner(expression, on_error=on_scanner_error_mock)
+        tokens = scanner.scan_tokens()
+        parser = Parser(tokens, on_token_error=on_parser_error_mock)
+        expr = parser.parse()
+
+        result = Interpreter().interpret(expr)
+
+        assert result == result
+
+    def test_interpret_error(self, mocker):
+        on_scanner_error_mock = mocker.MagicMock()
+        on_parser_error_mock = mocker.MagicMock()
+        on_interpret_error_mock = mocker.MagicMock()
+
+        expression = '0 + "Foo"'
+
+        scanner = Scanner(expression, on_error=on_scanner_error_mock)
+        tokens = scanner.scan_tokens()
+        parser = Parser(tokens, on_token_error=on_parser_error_mock)
+        expr = parser.parse()
+
+        Interpreter().interpret(expr, on_error=on_interpret_error_mock)
+
+        # There will be an error
+        assert on_interpret_error_mock.called
+        assert "Operands must be two numbers or two strings" in str(
+            on_interpret_error_mock.call_args
+        )
