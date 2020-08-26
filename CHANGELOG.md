@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Completing chapter 8
-- Completed upto chapter 8.1.1
+- Completed upto chapter 8.1.3
 - Added Stmt class
 - Add isort to ast generator
 - Make imports configurable in ast generator

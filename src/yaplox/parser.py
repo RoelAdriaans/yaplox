@@ -1,6 +1,7 @@
 from typing import List
 
 from yaplox.expr import Binary, Expr, Grouping, Literal, Unary
+from yaplox.stmt import Expression, Print, Stmt
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 
@@ -23,11 +24,28 @@ class Parser:
         self.on_token_error = on_token_error
         self.current = 0
 
-    def parse(self):
-        try:
-            return self._expression()
-        except ParseError:
-            return None
+    def parse(self) -> List[Stmt]:
+        statements = []
+        while not self._is_at_end():
+            statements.append(self._statement())
+
+        return statements
+
+    def _statement(self) -> Stmt:
+        if self._match([TokenType.PRINT]):
+            return self._print_statement()
+
+        return self._expression_statement()
+
+    def _print_statement(self) -> Stmt:
+        value = self._expression()
+        self._consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return Print(value)
+
+    def _expression_statement(self) -> Stmt:
+        expr = self._expression()
+        self._consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return Expression(expr)
 
     def _expression(self) -> Expr:
         return self._equality()

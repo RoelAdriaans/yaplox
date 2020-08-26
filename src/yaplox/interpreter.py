@@ -1,6 +1,9 @@
+from typing import Any, List
+
 from structlog import get_logger
 
-from yaplox.expr import Any, Binary, Expr, ExprVisitor, Grouping, Literal, Unary
+from yaplox.expr import Binary, Expr, ExprVisitor, Grouping, Literal, Unary
+from yaplox.stmt import Expression, Print, Stmt, StmtVisitor
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
@@ -8,16 +11,17 @@ from yaplox.yaplox_runtime_error import YaploxRuntimeError
 logger = get_logger()
 
 
-class Interpreter(ExprVisitor):
-    def interpret(self, expression: Expr, on_error=None):
+class Interpreter(ExprVisitor, StmtVisitor):
+    def interpret(self, statements: List[Stmt], on_error=None):
         try:
-            value = self._evaluate(expression)
-            str_value = self._stringify(value)
-            logger.debug("Inteprenter result", value=str_value)
-            return str_value
-
+            for statement in statements:
+                logger.debug("Executing", statement=statement)
+                self._execute(statement)
         except YaploxRuntimeError as excp:
             on_error(excp)
+
+    def _execute(self, stmt: Stmt):
+        stmt.accept(self)
 
     @staticmethod
     def _stringify(obj) -> str:
@@ -138,3 +142,11 @@ class Interpreter(ExprVisitor):
 
     def _evaluate(self, expr: Expr):
         return expr.accept(self)
+
+    # statement stuff
+    def visit_expression_stmt(self, stmt: Expression) -> None:
+        self._evaluate(stmt.expression)
+
+    def visit_print_stmt(self, stmt: Print) -> None:
+        value = self._evaluate(stmt.expression)
+        print(self._stringify(value))

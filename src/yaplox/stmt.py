@@ -10,11 +10,11 @@ class StmtVisitor(ABC):
     """This class is used as an Vistor for the Stmt class"""
 
     @abstractmethod
-    def visit_expression_stmt(self, expr: "Expression"):
+    def visit_expression_stmt(self, stmt: "Expression"):
         raise NotImplementedError
 
     @abstractmethod
-    def visit_print_stmt(self, expr: "Print"):
+    def visit_print_stmt(self, stmt: "Print"):
         raise NotImplementedError
 
 

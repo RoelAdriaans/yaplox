@@ -4,6 +4,7 @@ from yaplox.expr import Binary, Grouping, Literal, Unary
 from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
 from yaplox.scanner import Scanner
+from yaplox.stmt import Expression
 from yaplox.token_type import TokenType
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
@@ -129,11 +130,12 @@ class TestInterpreter:
         on_scanner_error_mock = mocker.MagicMock()
         on_parser_error_mock = mocker.MagicMock()
 
-        test_string = "4 * 6 / 2"
+        test_string = "4 * 6 / 2;"
         scanner = Scanner(test_string, on_error=on_scanner_error_mock)
         tokens = scanner.scan_tokens()
         parser = Parser(tokens, on_token_error=on_parser_error_mock)
-        expr = parser.parse()
+        statements = parser.parse()
+        expr: Expression = statements[0].expression
 
         assert isinstance(expr, Binary)
         assert isinstance(expr.left, Binary)

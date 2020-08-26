@@ -104,7 +104,7 @@ class GenerateAst:
             lines = [
                 "    @abstractmethod",
                 f"    def visit_{class_name.lower()}_{base_name.lower()}"
-                f'(self, expr: "{class_name}"):',
+                f'(self, {base_name.lower()}: "{class_name}"):',
                 "        raise NotImplementedError",
             ]
             vistor_lines.extend(lines)
