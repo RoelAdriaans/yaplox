@@ -18,7 +18,7 @@ class Environment:
             raise YaploxRuntimeError(name, f"Undefined variable '{name.lexeme}'.")
 
     def assign(self, name: Token, value: Any):
-        """ Assign a new value to an existing variable. Eg:
+        """Assign a new value to an existing variable. Eg:
         var a = 3;
         a = 4  # This calls assign.
         """
