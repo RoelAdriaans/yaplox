@@ -21,20 +21,28 @@ class GenerateAst:
         self._define_ast(
             base_name="Expr",
             types=[
+                "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Any value",
                 "Unary    : Token operator, Expr right",
+                "Variable : Token name",
             ],
             imports={"typing": ["Any"], "yaplox.token": ["Token"]},
         )
+
         self._define_ast(
             base_name="Stmt",
             types=[
-                "Expression       : Expr expression",
-                "Print            : Expr expression",
+                "Expression : Expr expression",
+                "Print      : Expr expression",
+                "Var        : Token name, Optional[Expr] initializer",
             ],
-            imports={"yaplox.expr": ["Expr"]},
+            imports={
+                "typing": ["Optional"],
+                "yaplox.expr": ["Expr"],
+                "yaplox.token": ["Token"],
+            },
         )
 
     def _create_output_directory(self):

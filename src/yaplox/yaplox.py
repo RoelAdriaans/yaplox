@@ -34,8 +34,8 @@ class Yaplox:
         if self.had_error:
             logger.debug("Error after parsing")
             return
-        interpreter = Interpreter()
-        interpreter.interpret(statements, on_error=self.runtime_error)
+
+        self.interpreter.interpret(statements, on_error=self.runtime_error)
 
     def error(self, line: int, message: str):
         self.report(line, "", message)

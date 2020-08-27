@@ -2,8 +2,18 @@ from typing import Any, List
 
 from structlog import get_logger
 
-from yaplox.expr import Binary, Expr, ExprVisitor, Grouping, Literal, Unary
-from yaplox.stmt import Expression, Print, Stmt, StmtVisitor
+from yaplox.environment import Environment
+from yaplox.expr import (
+    Assign,
+    Binary,
+    Expr,
+    ExprVisitor,
+    Grouping,
+    Literal,
+    Unary,
+    Variable,
+)
+from yaplox.stmt import Expression, Print, Stmt, StmtVisitor, Var
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
@@ -12,16 +22,23 @@ logger = get_logger()
 
 
 class Interpreter(ExprVisitor, StmtVisitor):
-    def interpret(self, statements: List[Stmt], on_error=None):
+    def __init__(self):
+        self.environment = Environment()
+
+    def interpret(self, statements: List[Stmt], on_error=None) -> Any:
         try:
+            res = None
             for statement in statements:
                 logger.debug("Executing", statement=statement)
-                self._execute(statement)
+                res = self._execute(statement)
+            # The return in the interpreter is not default Lox. It's added for now
+            # to make testing and debugging easier.
+            return res
         except YaploxRuntimeError as excp:
             on_error(excp)
 
     def _execute(self, stmt: Stmt):
-        stmt.accept(self)
+        return stmt.accept(self)
 
     @staticmethod
     def _stringify(obj) -> str:
@@ -143,10 +160,27 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def _evaluate(self, expr: Expr):
         return expr.accept(self)
 
+    def visit_variable_expr(self, expr: "Variable") -> Any:
+        return self.environment.get(expr.name)
+
+    def visit_assign_expr(self, expr: "Assign") -> Any:
+        value = self._evaluate(expr.value)
+
+        self.environment.assign(expr.name, value)
+
+        return value
+
     # statement stuff
     def visit_expression_stmt(self, stmt: Expression) -> None:
-        self._evaluate(stmt.expression)
+        return self._evaluate(stmt.expression)
 
     def visit_print_stmt(self, stmt: Print) -> None:
         value = self._evaluate(stmt.expression)
         print(self._stringify(value))
+
+    def visit_var_stmt(self, stmt: "Var") -> None:
+        value = None
+        if stmt.initializer is not None:
+            value = self._evaluate(stmt.initializer)
+
+        self.environment.define(stmt.name.lexeme, value)

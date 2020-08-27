@@ -29,7 +29,7 @@ class TestMain:
         def mocked_load_file(file):
             print("In mocked load file")
             assert file == "source.lox"
-            return "3+4"
+            return "print(3+4);"
 
         monkeypatch.setattr(Yaplox, "_load_file", mocked_load_file)
 

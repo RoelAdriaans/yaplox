@@ -1,7 +1,22 @@
-from yaplox.expr import Binary, Expr, ExprVisitor, Grouping, Literal, Unary
+from yaplox.expr import (
+    Assign,
+    Binary,
+    Expr,
+    ExprVisitor,
+    Grouping,
+    Literal,
+    Unary,
+    Variable,
+)
 
 
 class AstPrinter(ExprVisitor):
+    def visit_assign_expr(self, expr: "Assign"):
+        return "TODO visit_assign_expr"
+
+    def visit_variable_expr(self, expr: "Variable"):
+        return "TODO visit_variable_expr"
+
     def print(self, expr: Expr) -> str:
         return expr.accept(self)
 
