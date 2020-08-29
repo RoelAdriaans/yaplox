@@ -34,12 +34,13 @@ class GenerateAst:
         self._define_ast(
             base_name="Stmt",
             types=[
+                "Block      : List<Stmt> statements",
                 "Expression : Expr expression",
                 "Print      : Expr expression",
                 "Var        : Token name, Optional[Expr] initializer",
             ],
             imports={
-                "typing": ["Optional"],
+                "typing": ["List", "Optional"],
                 "yaplox.expr": ["Expr"],
                 "yaplox.token": ["Token"],
             },
@@ -86,7 +87,11 @@ class GenerateAst:
 
         for class_type in types:
             class_name = class_type.split(":")[0].strip()
-            fields = class_type.split(":")[1].strip()
+            # Replace <> with [], to make type hinting happy and keep the original
+            # formatting.
+            fields = (
+                class_type.split(":")[1].strip().replace("<", "[").replace(">", "]")
+            )
             lines.extend(self._define_type(base_name, class_name, fields))
 
         self._write_file(base_name, lines)

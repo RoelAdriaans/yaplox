@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from yaplox.expr import Assign, Binary, Expr, Grouping, Literal, Unary, Variable
-from yaplox.stmt import Expression, Print, Stmt, Var
+from yaplox.stmt import Block, Expression, Print, Stmt, Var
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 
@@ -55,8 +55,18 @@ class Parser:
     def _statement(self) -> Stmt:
         if self._match([TokenType.PRINT]):
             return self._print_statement()
+        if self._match([TokenType.LEFT_BRACE]):
+            return Block(self._block())
 
         return self._expression_statement()
+
+    def _block(self) -> List[Stmt]:
+        statements = []
+        while not self._check(TokenType.RIGHT_BRACE) and not self._is_at_end():
+            statements.append(self._declaration())
+
+        self._consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
+        return statements
 
     def _print_statement(self) -> Stmt:
         value = self._expression()

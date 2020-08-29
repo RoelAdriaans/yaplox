@@ -42,3 +42,28 @@ class TestEnvironment:
             assert env.get(foo_token) is falsy_values
         else:
             assert env.get(foo_token) == falsy_values
+
+    def test_environment_enclosure(self, create_token_factory):
+        global_env = Environment()
+        local_env = Environment(enclosing=global_env)
+
+        # Set a value to the global, that is availale in local
+        foo_token = create_token_factory(token_type=TokenType.VAR, lexeme="Foo")
+        global_env.define("Foo", "42")
+
+        # And retrieve it in the local env:
+        assert local_env.get(foo_token) == "42"
+
+        # Assign it a new value in the local env should also work:
+        local_env.assign(foo_token, "New value")
+
+        # And retrieve it in the local env:
+        assert global_env.get(foo_token) == "New value"
+        assert local_env.get(foo_token) == "New value"
+
+        # Override the value in the local env:
+        local_env.define("Foo", "Local variable")
+
+        # This must override the local env, but keep global env the same.
+        assert global_env.get(foo_token) == "New value"
+        assert local_env.get(foo_token) == "Local variable"

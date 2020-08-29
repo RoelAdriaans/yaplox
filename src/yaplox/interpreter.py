@@ -13,7 +13,7 @@ from yaplox.expr import (
     Unary,
     Variable,
 )
-from yaplox.stmt import Expression, Print, Stmt, StmtVisitor, Var
+from yaplox.stmt import Block, Expression, Print, Stmt, StmtVisitor, Var
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
@@ -184,3 +184,15 @@ class Interpreter(ExprVisitor, StmtVisitor):
             value = self._evaluate(stmt.initializer)
 
         self.environment.define(stmt.name.lexeme, value)
+
+    def visit_block_stmt(self, stmt: "Block") -> None:
+        self._execute_block(stmt.statements, Environment(self.environment))
+
+    def _execute_block(self, statements: List[Stmt], environment: Environment):
+        previous_env = self.environment
+        try:
+            self.environment = environment
+            for statement in statements:
+                self._execute(statement)
+        finally:
+            self.environment = previous_env
