@@ -66,7 +66,9 @@ class Parser:
             statements.append(self._declaration())
 
         self._consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
-        return statements
+
+        # Ignore the type for now. statements will not be empty
+        return statements  # type: ignore
 
     def _print_statement(self) -> Stmt:
         value = self._expression()

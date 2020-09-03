@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Any, Dict, Optional
 
 from yaplox.token import Token
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
@@ -6,7 +6,7 @@ from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
 class Environment:
     def __init__(self, enclosing: Optional["Environment"] = None):
-        self.values = dict()
+        self.values: Dict[str, Any] = dict()
         self.enclosing = enclosing
 
     def define(self, name: str, value: Any):
