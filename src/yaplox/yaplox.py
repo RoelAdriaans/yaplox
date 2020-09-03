@@ -3,6 +3,7 @@ import sys
 from structlog import get_logger
 
 from yaplox.__version__ import __VERSION__
+from yaplox.config import config  # noqa: F401
 from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
 from yaplox.scanner import Scanner
