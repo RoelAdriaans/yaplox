@@ -3,7 +3,7 @@ import sys
 from structlog import get_logger
 
 from yaplox.__version__ import __VERSION__
-from yaplox.ast_printer import AstPrinter
+from yaplox.config import config  # noqa: F401
 from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
 from yaplox.scanner import Scanner
@@ -25,16 +25,18 @@ class Yaplox:
 
         scanner = Scanner(source, on_error=self.error)
         tokens = scanner.scan_tokens()
-        parser = Parser(tokens, on_token_error=self.token_error)
-        expr = parser.parse()
 
         for token in tokens:
             logger.debug("Running token", token=token)
 
-        ast = AstPrinter().print(expr)
-        logger.debug("Generated ast", ast=ast)
+        parser = Parser(tokens, on_token_error=self.token_error)
+        statements = parser.parse()
 
-        print(self.interpreter.interpret(expression=expr, on_error=self.runtime_error))
+        if self.had_error:
+            logger.debug("Error after parsing")
+            return
+
+        self.interpreter.interpret(statements, on_error=self.runtime_error)
 
     def error(self, line: int, message: str):
         self.report(line, "", message)

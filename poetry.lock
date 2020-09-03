@@ -59,6 +59,14 @@ python-versions = ">=3.6.1"
 version = "3.2.0"
 
 [[package]]
+category = "main"
+description = "Extensible library for separation of settings from code."
+name = "classyconf"
+optional = false
+python-versions = "*"
+version = "0.3.0"
+
+[[package]]
 category = "dev"
 description = "Composable command line interface toolkit"
 name = "click"
@@ -414,7 +422,7 @@ docs = ["proselint (>=0.10.2)", "sphinx (>=3)", "sphinx-argparse (>=0.2.5)", "sp
 testing = ["coverage (>=5)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", "pytest (>=4)", "pytest-env (>=0.6.2)", "pytest-freezegun (>=0.4.1)", "pytest-mock (>=2)", "pytest-randomly (>=1)", "pytest-timeout (>=1)", "pytest-xdist (>=1.31.0)", "packaging (>=20.0)", "xonsh (>=0.9.16)"]
 
 [metadata]
-content-hash = "1f977f40f9646a3113a63cbc18787f8c076aa883190c931f67d628bd6db0161a"
+content-hash = "b68220ff4c15dbcb96fa1f108fd7ef5735b474c575d717b7d72f71226cdc41f1"
 lock-version = "1.0"
 python-versions = "^3.8"
 
@@ -438,6 +446,9 @@ black = [
 cfgv = [
     {file = "cfgv-3.2.0-py2.py3-none-any.whl", hash = "sha256:32e43d604bbe7896fe7c248a9c2276447dbef840feb28fe20494f62af110211d"},
     {file = "cfgv-3.2.0.tar.gz", hash = "sha256:cf22deb93d4bcf92f345a5c3cd39d3d41d6340adc60c78bbbd6588c384fda6a1"},
+]
+classyconf = [
+    {file = "classyconf-0.3.0.tar.gz", hash = "sha256:5132c41114e3bc1472b90955806511592d0bec73c38cad218b428a60f184eab4"},
 ]
 click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},

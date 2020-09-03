@@ -4,7 +4,9 @@ from yaplox.expr import Binary, Grouping, Literal, Unary
 from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
 from yaplox.scanner import Scanner
+from yaplox.stmt import Expression
 from yaplox.token_type import TokenType
+from yaplox.yaplox import Yaplox
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
 
@@ -129,11 +131,12 @@ class TestInterpreter:
         on_scanner_error_mock = mocker.MagicMock()
         on_parser_error_mock = mocker.MagicMock()
 
-        test_string = "4 * 6 / 2"
+        test_string = "4 * 6 / 2;"
         scanner = Scanner(test_string, on_error=on_scanner_error_mock)
         tokens = scanner.scan_tokens()
         parser = Parser(tokens, on_token_error=on_parser_error_mock)
-        expr = parser.parse()
+        statements = parser.parse()
+        expr: Expression = statements[0].expression
 
         assert isinstance(expr, Binary)
         assert isinstance(expr.left, Binary)
@@ -160,7 +163,12 @@ class TestInterpreter:
 
     @pytest.mark.parametrize(
         ("expression", "result"),
-        [("4 * 6 / 2", "12"), ("12 < 6", "False"), ("12 > 6", "True"), ("3+3", "6")],
+        [
+            ("4 * 6 / 2;", "12"),
+            ("12 < 6;", "False"),
+            ("12 > 6;", "True"),
+            ("3 + 3;", "6"),
+        ],
     )
     def test_interpret(self, mocker, expression, result):
         on_scanner_error_mock = mocker.MagicMock()
@@ -169,9 +177,9 @@ class TestInterpreter:
         scanner = Scanner(expression, on_error=on_scanner_error_mock)
         tokens = scanner.scan_tokens()
         parser = Parser(tokens, on_token_error=on_parser_error_mock)
-        expr = parser.parse()
+        statements = parser.parse()
 
-        result = Interpreter().interpret(expr)
+        result = Interpreter().interpret(statements)
 
         assert result == result
 
@@ -180,17 +188,56 @@ class TestInterpreter:
         on_parser_error_mock = mocker.MagicMock()
         on_interpret_error_mock = mocker.MagicMock()
 
-        expression = '0 + "Foo"'
+        expression = '0 + "Foo";'
 
         scanner = Scanner(expression, on_error=on_scanner_error_mock)
         tokens = scanner.scan_tokens()
         parser = Parser(tokens, on_token_error=on_parser_error_mock)
-        expr = parser.parse()
+        statements = parser.parse()
 
-        Interpreter().interpret(expr, on_error=on_interpret_error_mock)
+        Interpreter().interpret(statements, on_error=on_interpret_error_mock)
 
         # There will be an error
         assert on_interpret_error_mock.called
         assert "Operands must be two numbers or two strings" in str(
             on_interpret_error_mock.call_args
         )
+
+    def test_assignment(self, mocker):
+        on_scanner_error_mock = mocker.MagicMock()
+        on_parser_error_mock = mocker.MagicMock()
+        on_interpret_error_mock = mocker.MagicMock()
+
+        lines = [
+            "var a = 0;",
+            "var c = a;",
+            "var b;",
+            "a = 3 + 6;",
+            "b = 3 / 6;",
+            "a = a + b;",
+            "print(a);",
+            "a;",
+        ]
+
+        expression = "\n".join(lines)
+
+        scanner = Scanner(expression, on_error=on_scanner_error_mock)
+        tokens = scanner.scan_tokens()
+        parser = Parser(tokens, on_token_error=on_parser_error_mock)
+        statements = parser.parse()
+
+        result = Interpreter().interpret(statements, on_error=on_interpret_error_mock)
+
+        assert result == 9.5
+
+    def test_stringify(self, capsys):
+        lines = [
+            "var a;",
+            "print(a);",
+        ]
+
+        lines = "\n".join(lines)
+
+        Yaplox().run(lines)
+        captured = capsys.readouterr()
+        assert captured.out == "nil\n"

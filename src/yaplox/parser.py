@@ -1,6 +1,7 @@
-from typing import List
+from typing import List, Optional
 
-from yaplox.expr import Binary, Expr, Grouping, Literal, Unary
+from yaplox.expr import Assign, Binary, Expr, Grouping, Literal, Unary, Variable
+from yaplox.stmt import Block, Expression, Print, Stmt, Var
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 
@@ -23,14 +24,77 @@ class Parser:
         self.on_token_error = on_token_error
         self.current = 0
 
-    def parse(self):
+    def parse(self) -> List[Stmt]:
+        statements = []
+        while not self._is_at_end():
+            if declaration := self._declaration():
+                statements.append(declaration)
+
+        return statements
+
+    def _declaration(self) -> Optional[Stmt]:
         try:
-            return self._expression()
+            if self._match([TokenType.VAR]):
+                return self._var_declaration()
+            return self._statement()
         except ParseError:
+            self._synchronize()
             return None
 
+    def _var_declaration(self) -> Stmt:
+        name = self._consume(TokenType.IDENTIFIER, "Expect variable name.")
+
+        initializer = None
+
+        if self._match([TokenType.EQUAL]):
+            initializer = self._expression()
+
+        self._consume(TokenType.SEMICOLON, "Expect ';' after variable declaration.")
+        return Var(name=name, initializer=initializer)
+
+    def _statement(self) -> Stmt:
+        if self._match([TokenType.PRINT]):
+            return self._print_statement()
+        if self._match([TokenType.LEFT_BRACE]):
+            return Block(self._block())
+
+        return self._expression_statement()
+
+    def _block(self) -> List[Stmt]:
+        statements = []
+        while not self._check(TokenType.RIGHT_BRACE) and not self._is_at_end():
+            statements.append(self._declaration())
+
+        self._consume(TokenType.RIGHT_BRACE, "Expect '}' after block.")
+
+        # Ignore the type for now. statements will not be empty
+        return statements  # type: ignore
+
+    def _print_statement(self) -> Stmt:
+        value = self._expression()
+        self._consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return Print(value)
+
+    def _expression_statement(self) -> Stmt:
+        expr = self._expression()
+        self._consume(TokenType.SEMICOLON, "Expect ';' after value.")
+        return Expression(expr)
+
     def _expression(self) -> Expr:
-        return self._equality()
+        return self._assignment()
+
+    def _assignment(self) -> Expr:
+        expr = self._equality()
+
+        if self._match([TokenType.EQUAL]):
+            equals = self._previous()
+            value = self._assignment()
+
+            if isinstance(expr, Variable):
+                name = expr.name
+                return Assign(name=name, value=value)
+            self._error(equals, "Invalid assignment target.")
+        return expr
 
     def _equality(self) -> Expr:
         expr = self._comparison()
@@ -100,6 +164,9 @@ class Parser:
         if self._match([TokenType.NUMBER, TokenType.STRING]):
             return Literal(self._previous().literal)
 
+        if self._match([TokenType.IDENTIFIER]):
+            return Variable(self._previous())
+
         if self._match([TokenType.LEFT_PAREN]):
             expr = self._expression()
             self._consume(TokenType.RIGHT_PAREN, "Expect ')' after expression.")
@@ -142,12 +209,10 @@ class Parser:
         self.on_token_error(token, message)
         raise ParseError(token, message)
 
-    def _synchronize(self):  # pragma: no cover
+    def _synchronize(self):
         """
         When the parser detects an error, try to recover and consume tokens until a
         ; or an statement is found.
-
-        This is not yet functional, and thus excludede in coverage tests.
         """
         self._advance()
 

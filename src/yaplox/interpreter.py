@@ -1,6 +1,19 @@
+from typing import Any, List
+
 from structlog import get_logger
 
-from yaplox.expr import Any, Binary, Expr, ExprVisitor, Grouping, Literal, Unary
+from yaplox.environment import Environment
+from yaplox.expr import (
+    Assign,
+    Binary,
+    Expr,
+    ExprVisitor,
+    Grouping,
+    Literal,
+    Unary,
+    Variable,
+)
+from yaplox.stmt import Block, Expression, Print, Stmt, StmtVisitor, Var
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
@@ -8,16 +21,24 @@ from yaplox.yaplox_runtime_error import YaploxRuntimeError
 logger = get_logger()
 
 
-class Interpreter(ExprVisitor):
-    def interpret(self, expression: Expr, on_error=None):
-        try:
-            value = self._evaluate(expression)
-            str_value = self._stringify(value)
-            logger.debug("Inteprenter result", value=str_value)
-            return str_value
+class Interpreter(ExprVisitor, StmtVisitor):
+    def __init__(self):
+        self.environment = Environment()
 
+    def interpret(self, statements: List[Stmt], on_error=None) -> Any:
+        try:
+            res = None
+            for statement in statements:
+                logger.debug("Executing", statement=statement)
+                res = self._execute(statement)
+            # The return in the interpreter is not default Lox. It's added for now
+            # to make testing and debugging easier.
+            return res
         except YaploxRuntimeError as excp:
             on_error(excp)
+
+    def _execute(self, stmt: Stmt):
+        return stmt.accept(self)
 
     @staticmethod
     def _stringify(obj) -> str:
@@ -138,3 +159,40 @@ class Interpreter(ExprVisitor):
 
     def _evaluate(self, expr: Expr):
         return expr.accept(self)
+
+    def visit_variable_expr(self, expr: "Variable") -> Any:
+        return self.environment.get(expr.name)
+
+    def visit_assign_expr(self, expr: "Assign") -> Any:
+        value = self._evaluate(expr.value)
+
+        self.environment.assign(expr.name, value)
+
+        return value
+
+    # statement stuff
+    def visit_expression_stmt(self, stmt: Expression) -> None:
+        return self._evaluate(stmt.expression)
+
+    def visit_print_stmt(self, stmt: Print) -> None:
+        value = self._evaluate(stmt.expression)
+        print(self._stringify(value))
+
+    def visit_var_stmt(self, stmt: "Var") -> None:
+        value = None
+        if stmt.initializer is not None:
+            value = self._evaluate(stmt.initializer)
+
+        self.environment.define(stmt.name.lexeme, value)
+
+    def visit_block_stmt(self, stmt: "Block") -> None:
+        self._execute_block(stmt.statements, Environment(self.environment))
+
+    def _execute_block(self, statements: List[Stmt], environment: Environment):
+        previous_env = self.environment
+        try:
+            self.environment = environment
+            for statement in statements:
+                self._execute(statement)
+        finally:
+            self.environment = previous_env
