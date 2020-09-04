@@ -13,6 +13,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Errors in yaplox are printed to stderr
 - generate_ast.py now converts CamelCase fieldnames to snake_case
 
+# Fixed
+
+- Changed parser._match to accept an arbitrary number of tokens. A list is no
+  longer required.
+
 ## [0.0.4] - 2020-09-03
 
 ### Added
