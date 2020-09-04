@@ -1,5 +1,3 @@
-import pytest
-
 from yaplox.yaplox import Yaplox
 
 
@@ -109,7 +107,28 @@ class TestControl:
         captured = capsys.readouterr()
         assert "Expect ')' after if condition." in captured.err
 
-    @pytest.mark.skip("While not yet implemented")
+    def test_simple_while(self, capsys):
+        source = [
+            "var a = 0;",
+            "",
+            "while (a < 10) {",
+            "    print a;",
+            "    a = a + 1;",
+            "}",
+        ]
+
+        source = "\n".join(source)
+        yaplox = Yaplox()
+        yaplox.run(source)
+
+        assert not yaplox.had_error
+        assert not yaplox.had_runtime_error
+
+        captured = capsys.readouterr()
+        expected_str_output = "\n".join([str(n) for n in range(10)]) + "\n"
+
+        assert captured.out == expected_str_output
+
     def test_fibonacci_sequence(self, capsys):
         """ Compute fibonacci numbers """
         source = [
@@ -139,9 +158,9 @@ class TestControl:
             5, 8, 13, 21, 34,
             55, 89, 144, 233, 377,
             610, 987, 1597, 2584, 4181,
-            6765, 10946,
+            6765,
         ]
         # fmt: on
-        expected_str_output = "\n".join([str(nr) for nr in fibonacci])
+        expected_str_output = "\n".join([str(nr) for nr in fibonacci]) + "\n"
 
         assert captured.out == expected_str_output

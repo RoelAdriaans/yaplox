@@ -10,7 +10,7 @@ from yaplox.expr import (
     Unary,
     Variable,
 )
-from yaplox.stmt import Block, Expression, If, Print, Stmt, Var
+from yaplox.stmt import Block, Expression, If, Print, Stmt, Var, While
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 
@@ -66,6 +66,8 @@ class Parser:
             return self._if_statement()
         if self._match(TokenType.PRINT):
             return self._print_statement()
+        if self._match(TokenType.WHILE):
+            return self._while_statement()
         if self._match(TokenType.LEFT_BRACE):
             return Block(self._block())
 
@@ -98,6 +100,14 @@ class Parser:
         value = self._expression()
         self._consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return Print(value)
+
+    def _while_statement(self) -> Stmt:
+        self._consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
+        condition = self._expression()
+        self._consume(TokenType.RIGHT_PAREN, "Expect ')' after condition.")
+        body = self._statement()
+
+        return While(condition=condition, body=body)
 
     def _expression_statement(self) -> Stmt:
         expr = self._expression()

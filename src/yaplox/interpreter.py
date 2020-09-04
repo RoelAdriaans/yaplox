@@ -14,7 +14,7 @@ from yaplox.expr import (
     Unary,
     Variable,
 )
-from yaplox.stmt import Block, Expression, If, Print, Stmt, StmtVisitor, Var
+from yaplox.stmt import Block, Expression, If, Print, Stmt, StmtVisitor, Var, While
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
@@ -190,6 +190,10 @@ class Interpreter(ExprVisitor, StmtVisitor):
             self._execute(stmt.then_branch)
         elif stmt.else_branch is not None:
             self._execute(stmt.else_branch)
+
+    def visit_while_stmt(self, stmt: While) -> None:
+        while self._is_truthy(self._evaluate(stmt.condition)):
+            self._execute(stmt.body)
 
     def visit_print_stmt(self, stmt: Print) -> None:
         value = self._evaluate(stmt.expression)

@@ -9,9 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Completing chapter 8
-- Completed upto chapter 9.3
+- Completed upto chapter 9.4
 - Errors in yaplox are printed to stderr
 - generate_ast.py now converts CamelCase fieldnames to snake_case
+- Add while loops
 
 # Fixed
 

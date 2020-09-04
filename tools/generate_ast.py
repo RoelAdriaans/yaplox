@@ -41,6 +41,7 @@ class GenerateAst:
                 "If      : Expr condition, Stmt thenBranch, Optional[Stmt] elseBranch",
                 "Print      : Expr expression",
                 "Var        : Token name, Optional[Expr] initializer",
+                "While      : Expr condition, Stmt body",
             ],
             imports={
                 "typing": ["List", "Optional"],
