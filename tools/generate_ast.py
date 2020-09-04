@@ -4,6 +4,7 @@ This utility creates the Python code that is our tree.
 This util is not part of the source itselve and thus not tested. The generated files
 are tested. The /tools/ folder *is* linted with black, mypy, isport and isort.
 """
+import re
 import sys
 from pathlib import Path
 from typing import Dict, List
@@ -25,6 +26,7 @@ class GenerateAst:
                 "Binary   : Expr left, Token operator, Expr right",
                 "Grouping : Expr expression",
                 "Literal  : Any value",
+                "Logical  : Expr left, Token operator, Expr right",
                 "Unary    : Token operator, Expr right",
                 "Variable : Token name",
             ],
@@ -36,6 +38,7 @@ class GenerateAst:
             types=[
                 "Block      : List<Stmt> statements",
                 "Expression : Expr expression",
+                "If      : Expr condition, Stmt thenBranch, Optional[Stmt] elseBranch",
                 "Print      : Expr expression",
                 "Var        : Token name, Optional[Expr] initializer",
             ],
@@ -127,6 +130,13 @@ class GenerateAst:
     def _define_type(self, base_name: str, class_name: str, fields_list: str) -> List:
         # __init__ method
         fields = [field.strip().split() for field in fields_list.split(", ")]
+
+        # Convert SnakeCase to camel_case.
+        # This is used, for example, in the If Stmt, where the java variable names are
+        # thenBranch and elseBranch
+        for field in fields:
+            field[1] = re.sub(r"(?<!^)(?=[A-Z])", "_", field[1]).lower()
+
         init_fields = ", ".join(f"{field[1]}: {field[0]}" for field in fields)
 
         lines = [

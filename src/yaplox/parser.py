@@ -1,7 +1,16 @@
 from typing import List, Optional
 
-from yaplox.expr import Assign, Binary, Expr, Grouping, Literal, Unary, Variable
-from yaplox.stmt import Block, Expression, Print, Stmt, Var
+from yaplox.expr import (
+    Assign,
+    Binary,
+    Expr,
+    Grouping,
+    Literal,
+    Logical,
+    Unary,
+    Variable,
+)
+from yaplox.stmt import Block, Expression, If, Print, Stmt, Var
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 
@@ -53,6 +62,8 @@ class Parser:
         return Var(name=name, initializer=initializer)
 
     def _statement(self) -> Stmt:
+        if self._match([TokenType.IF]):
+            return self._if_statement()
         if self._match([TokenType.PRINT]):
             return self._print_statement()
         if self._match([TokenType.LEFT_BRACE]):
@@ -70,6 +81,19 @@ class Parser:
         # Ignore the type for now. statements will not be empty
         return statements  # type: ignore
 
+    def _if_statement(self) -> Stmt:
+        self._consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.")
+        condition: Expr = self._expression()
+        self._consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.")
+
+        then_branch = self._statement()
+
+        else_branch = None
+        if self._match([TokenType.ELSE]):
+            else_branch = self._statement()
+
+        return If(condition=condition, then_branch=then_branch, else_branch=else_branch)
+
     def _print_statement(self) -> Stmt:
         value = self._expression()
         self._consume(TokenType.SEMICOLON, "Expect ';' after value.")
@@ -84,7 +108,7 @@ class Parser:
         return self._assignment()
 
     def _assignment(self) -> Expr:
-        expr = self._equality()
+        expr = self._or()
 
         if self._match([TokenType.EQUAL]):
             equals = self._previous()
@@ -94,6 +118,26 @@ class Parser:
                 name = expr.name
                 return Assign(name=name, value=value)
             self._error(equals, "Invalid assignment target.")
+        return expr
+
+    def _or(self) -> Expr:
+        expr = self._and()
+
+        while self._match([TokenType.OR]):
+            operator = self._previous()
+            right = self._and()
+            expr = Logical(left=expr, operator=operator, right=right)
+
+        return expr
+
+    def _and(self) -> Expr:
+        expr = self._equality()
+
+        while self._match([TokenType.AND]):
+            operator = self._previous()
+            right = self._equality()
+            expr = Logical(left=expr, operator=operator, right=right)
+
         return expr
 
     def _equality(self) -> Expr:

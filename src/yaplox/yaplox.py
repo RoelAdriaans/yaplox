@@ -42,7 +42,9 @@ class Yaplox:
         self.report(line, "", message)
 
     def runtime_error(self, error: YaploxRuntimeError):
-        logger.warning(f"{str(error.message)} in line [line{error.token.line}]")
+        message = f"{str(error.message)} in line [line{error.token.line}]"
+        logger.warning(message)
+        print(message, file=sys.stderr)
         self.had_runtime_error = True
 
     def token_error(self, token: Token, message: str):
@@ -54,6 +56,7 @@ class Yaplox:
     def report(self, line: int, where: str, message: str):
         message = f"[line {line}] Error {where} : {message}"
         logger.warning(message)
+        print(message, file=sys.stderr)
         self.had_error = True
 
     @staticmethod
