@@ -164,3 +164,59 @@ class TestControl:
         expected_str_output = "\n".join([str(nr) for nr in fibonacci]) + "\n"
 
         assert captured.out == expected_str_output
+
+    def test_for(self, capsys):
+        source = [
+            "for(var a = 0;  a <= 5; a = a + 1) {",
+            "    print a;",
+            "}",
+        ]
+        source = "\n".join(source)
+        yaplox = Yaplox()
+        yaplox.run(source)
+
+        assert not yaplox.had_error
+        assert not yaplox.had_runtime_error
+
+        captured = capsys.readouterr()
+        expected_str_output = "\n".join([str(n) for n in range(6)]) + "\n"
+
+        assert captured.out == expected_str_output
+
+    def test_for_empty_init(self, capsys):
+        source = [
+            "var a = 0;",
+            "for(; a <= 5; a = a + 1) {",
+            "    print a;",
+            "}",
+        ]
+        source = "\n".join(source)
+        yaplox = Yaplox()
+        yaplox.run(source)
+
+        assert not yaplox.had_error
+        assert not yaplox.had_runtime_error
+
+        captured = capsys.readouterr()
+        expected_str_output = "\n".join([str(n) for n in range(6)]) + "\n"
+
+        assert captured.out == expected_str_output
+
+    def test_for_expression_init(self, capsys):
+        source = [
+            "var a;",
+            "for(a = 0; a <= 5; a = a + 1) {",
+            "    print a;",
+            "}",
+        ]
+        source = "\n".join(source)
+        yaplox = Yaplox()
+        yaplox.run(source)
+
+        assert not yaplox.had_error
+        assert not yaplox.had_runtime_error
+
+        captured = capsys.readouterr()
+        expected_str_output = "\n".join([str(n) for n in range(6)]) + "\n"
+
+        assert captured.out == expected_str_output
