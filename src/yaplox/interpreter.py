@@ -10,10 +10,11 @@ from yaplox.expr import (
     ExprVisitor,
     Grouping,
     Literal,
+    Logical,
     Unary,
     Variable,
 )
-from yaplox.stmt import Block, Expression, Print, Stmt, StmtVisitor, Var
+from yaplox.stmt import Block, Expression, If, Print, Stmt, StmtVisitor, Var, While
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
@@ -125,6 +126,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def visit_literal_expr(self, expr: Literal):
         return expr.value
 
+    def visit_logical_expr(self, expr: Logical):
+        left = self._evaluate(expr.left)
+        if expr.operator.token_type == TokenType.OR:
+            if self._is_truthy(left):
+                return left
+        else:
+            if not self._is_truthy(left):
+                return left
+        return self._evaluate(expr.right)
+
     def visit_unary_expr(self, expr: Unary):
         right = self._evaluate(expr.right)
 
@@ -173,6 +184,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
     # statement stuff
     def visit_expression_stmt(self, stmt: Expression) -> None:
         return self._evaluate(stmt.expression)
+
+    def visit_if_stmt(self, stmt: If) -> None:
+        if self._is_truthy(self._evaluate(stmt.condition)):
+            self._execute(stmt.then_branch)
+        elif stmt.else_branch is not None:
+            self._execute(stmt.else_branch)
+
+    def visit_while_stmt(self, stmt: While) -> None:
+        while self._is_truthy(self._evaluate(stmt.condition)):
+            self._execute(stmt.body)
 
     def visit_print_stmt(self, stmt: Print) -> None:
         value = self._evaluate(stmt.expression)

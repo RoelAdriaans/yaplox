@@ -5,17 +5,21 @@ from yaplox.expr import (
     ExprVisitor,
     Grouping,
     Literal,
+    Logical,
     Unary,
     Variable,
 )
 
 
 class AstPrinter(ExprVisitor):
-    def visit_assign_expr(self, expr: "Assign"):
-        return "TODO visit_assign_expr"
+    def visit_logical_expr(self, expr: Logical):
+        raise NotImplementedError
 
-    def visit_variable_expr(self, expr: "Variable"):
-        return "TODO visit_variable_expr"
+    def visit_assign_expr(self, expr: Assign):
+        raise NotImplementedError
+
+    def visit_variable_expr(self, expr: Variable):
+        raise NotImplementedError
 
     def print(self, expr: Expr) -> str:
         return expr.accept(self)
