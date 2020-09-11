@@ -24,13 +24,14 @@ class GenerateAst:
             types=[
                 "Assign   : Token name, Expr value",
                 "Binary   : Expr left, Token operator, Expr right",
+                "Call     : Expr callee, Token paren, List<Expr> arguments",
                 "Grouping : Expr expression",
                 "Literal  : Any value",
                 "Logical  : Expr left, Token operator, Expr right",
                 "Unary    : Token operator, Expr right",
                 "Variable : Token name",
             ],
-            imports={"typing": ["Any"], "yaplox.token": ["Token"]},
+            imports={"typing": ["Any", "List"], "yaplox.token": ["Token"]},
         )
 
         self._define_ast(
@@ -38,6 +39,7 @@ class GenerateAst:
             types=[
                 "Block      : List<Stmt> statements",
                 "Expression : Expr expression",
+                "Function   : Token name, List<Token> params, List<Stmt> body",
                 "If      : Expr condition, Stmt thenBranch, Optional[Stmt] elseBranch",
                 "Print      : Expr expression",
                 "Var        : Token name, Optional[Expr] initializer",

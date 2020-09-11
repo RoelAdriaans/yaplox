@@ -3,6 +3,7 @@ from typing import List, Optional
 from yaplox.expr import (
     Assign,
     Binary,
+    Call,
     Expr,
     Grouping,
     Literal,
@@ -10,7 +11,7 @@ from yaplox.expr import (
     Unary,
     Variable,
 )
-from yaplox.stmt import Block, Expression, If, Print, Stmt, Var, While
+from yaplox.stmt import Block, Expression, Function, If, Print, Stmt, Var, While
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 
@@ -43,12 +44,39 @@ class Parser:
 
     def _declaration(self) -> Optional[Stmt]:
         try:
+            if self._match(TokenType.FUN):
+                return self._function("function")
             if self._match(TokenType.VAR):
                 return self._var_declaration()
             return self._statement()
         except ParseError:
             self._synchronize()
             return None
+
+    def _function(self, kind: str) -> Stmt:
+        name = self._consume(TokenType.IDENTIFIER, f"Expect {kind} name.")
+        self._consume(TokenType.LEFT_PAREN, f"Expect '(' after {kind} name.")
+
+        parameters = []
+        # If the next Token is not the right parenthesis ')', there are parameters
+        if not self._check(TokenType.RIGHT_PAREN):
+            # Match the first parameter
+            parameters.append(
+                self._consume(TokenType.IDENTIFIER, "Expect parameter name.")
+            )
+            while self._match(TokenType.COMMA):
+                if len(parameters) >= 255:
+                    self._error(self._peek(), "Cannot have more than 255 parameters.")
+
+                parameters.append(
+                    self._consume(TokenType.IDENTIFIER, "Expect parameter name.")
+                )
+        self._consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters.")
+
+        # Parse the body and wrap it in a function node
+        self._consume(TokenType.LEFT_BRACE, f"Expect '{{' before {kind} body.")
+        body = self._block()
+        return Function(name=name, params=parameters, body=body)
 
     def _var_declaration(self) -> Stmt:
         name = self._consume(TokenType.IDENTIFIER, "Expect variable name.")
@@ -242,7 +270,33 @@ class Parser:
             right = self._unary()
             return Unary(operator, right)
 
-        return self._primary()
+        return self._call()
+
+    def _finish_call(self, callee: Expr) -> Expr:
+        arguments = []
+        # If we don't see the ) in the next token, we must have
+        # at least one argument
+        if not self._check(TokenType.RIGHT_PAREN):
+            arguments.append(self._expression())
+            # If we have extra arguments, and thus a COMMA, add the next expressions
+            while self._match(TokenType.COMMA):
+                if len(arguments) >= 255:
+                    self._error(self._peek(), "Cannot have more than 255 arguments.")
+
+                arguments.append(self._expression())
+
+        paren = self._consume(TokenType.RIGHT_PAREN, "Expect ')' after arguments.")
+        return Call(callee=callee, paren=paren, arguments=arguments)
+
+    def _call(self) -> Expr:
+        expr = self._primary()
+
+        while True:
+            if self._match(TokenType.LEFT_PAREN):
+                expr = self._finish_call(expr)
+            else:
+                break
+        return expr
 
     def _primary(self) -> Expr:
         if self._match(TokenType.FALSE):

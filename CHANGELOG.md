@@ -9,6 +9,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+ - Completing chapter 10
+ - Completed upto chapter 10.4.1
+ - Implement functions
+ - Create the Clock function
+
+### Fixed
+
+- Print statement now works correctly with floats. Long floats would print in
+  scientific notation.
+- Pre-commit hooks now use the projects directly instead of using
+  `tox -e linters`. This would give random errors on windows about files in use.
+
 ## [0.0.6] - 2020-09-05
 
 ### Added

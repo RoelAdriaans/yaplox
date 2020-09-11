@@ -47,7 +47,7 @@ class TestEnvironment:
         global_env = Environment()
         local_env = Environment(enclosing=global_env)
 
-        # Set a value to the global, that is availale in local
+        # Set a value to the global, that is available in local
         foo_token = create_token_factory(token_type=TokenType.VAR, lexeme="Foo")
         global_env.define("Foo", "42")
 

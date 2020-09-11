@@ -1,6 +1,7 @@
 from yaplox.expr import (
     Assign,
     Binary,
+    Call,
     Expr,
     ExprVisitor,
     Grouping,
@@ -12,6 +13,9 @@ from yaplox.expr import (
 
 
 class AstPrinter(ExprVisitor):
+    def visit_call_expr(self, expr: Call):
+        raise NotImplementedError
+
     def visit_logical_expr(self, expr: Logical):
         raise NotImplementedError
 
