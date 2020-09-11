@@ -2,10 +2,12 @@ from typing import Any, List
 
 from structlog import get_logger
 
+from yaplox.clock import Clock
 from yaplox.environment import Environment
 from yaplox.expr import (
     Assign,
     Binary,
+    Call,
     Expr,
     ExprVisitor,
     Grouping,
@@ -14,9 +16,23 @@ from yaplox.expr import (
     Unary,
     Variable,
 )
-from yaplox.stmt import Block, Expression, If, Print, Stmt, StmtVisitor, Var, While
+from yaplox.stmt import (
+    Block,
+    Expression,
+    Function,
+    If,
+    Print,
+    Return,
+    Stmt,
+    StmtVisitor,
+    Var,
+    While,
+)
 from yaplox.token import Token
 from yaplox.token_type import TokenType
+from yaplox.yaplox_callable import YaploxCallable
+from yaplox.yaplox_function import YaploxFunction
+from yaplox.yaplox_return_exception import YaploxReturnException
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
 logger = get_logger()
@@ -24,7 +40,10 @@ logger = get_logger()
 
 class Interpreter(ExprVisitor, StmtVisitor):
     def __init__(self):
-        self.environment = Environment()
+        self.globals = Environment()
+        self.environment = self.globals
+
+        self.globals.define("clock", Clock())
 
     def interpret(self, statements: List[Stmt], on_error=None) -> Any:
         try:
@@ -47,8 +66,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
             return "nil"
 
         if isinstance(obj, float):
-            # Remove trailing zero's. No need to make a hack as in Java.
-            return f"{obj:g}"
+            # Print floats and remove trailing zero's, and if the dot is at the right
+            # part, remove it too. Decimal precision is set to 6 positions
+            return f"{obj:0.6f}".rstrip("0").rstrip(".")
 
         return str(obj)
 
@@ -120,6 +140,22 @@ class Interpreter(ExprVisitor, StmtVisitor):
                 expr.operator, f"Unknown operator {expr.operator.lexeme}"
             )
 
+    def visit_call_expr(self, expr: Call):
+        function = self._evaluate(expr.callee)
+
+        arguments = [self._evaluate(argument) for argument in expr.arguments]
+
+        if not isinstance(function, YaploxCallable):
+            raise YaploxRuntimeError(expr.paren, "Can only call functions and classes.")
+
+        # function = YaploxCallable(callee)
+        if len(arguments) != function.arity():
+            raise YaploxRuntimeError(
+                expr.paren,
+                f"Expected {function.arity()} arguments but got {len(arguments)}.",
+            )
+        return function.call(self, arguments)
+
     def visit_grouping_expr(self, expr: Grouping):
         return self._evaluate(expr.expression)
 
@@ -185,6 +221,10 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def visit_expression_stmt(self, stmt: Expression) -> None:
         return self._evaluate(stmt.expression)
 
+    def visit_function_stmt(self, stmt: Function) -> None:
+        function = YaploxFunction(stmt, self.environment)
+        self.environment.define(stmt.name.lexeme, function)
+
     def visit_if_stmt(self, stmt: If) -> None:
         if self._is_truthy(self._evaluate(stmt.condition)):
             self._execute(stmt.then_branch)
@@ -199,6 +239,12 @@ class Interpreter(ExprVisitor, StmtVisitor):
         value = self._evaluate(stmt.expression)
         print(self._stringify(value))
 
+    def visit_return_stmt(self, stmt: Return) -> None:
+        value = None
+        if stmt.value:
+            value = self._evaluate(stmt.value)
+        raise YaploxReturnException(value=value)
+
     def visit_var_stmt(self, stmt: "Var") -> None:
         value = None
         if stmt.initializer is not None:
@@ -207,9 +253,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
         self.environment.define(stmt.name.lexeme, value)
 
     def visit_block_stmt(self, stmt: "Block") -> None:
-        self._execute_block(stmt.statements, Environment(self.environment))
+        self.execute_block(stmt.statements, Environment(self.environment))
 
-    def _execute_block(self, statements: List[Stmt], environment: Environment):
+    def execute_block(self, statements: List[Stmt], environment: Environment):
         previous_env = self.environment
         try:
             self.environment = environment

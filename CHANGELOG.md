@@ -7,7 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.7] - 2020-09-11
+
 ### Added
+
+ - Completing chapter 10
+ - Implement functions
+ - Create the Clock function
+ - Functions return stuff
+ - Closures work, see `test_closures` for an example
+
+### Fixed
+
+- Print statement now works correctly with floats. Long floats would print in
+  scientific notation.
+- Pre-commit hooks now use the projects directly instead of using
+  `tox -e linters`. This would give random errors on windows about files in use.
 
 ## [0.0.6] - 2020-09-05
 
@@ -82,7 +97,8 @@ but python already defines one.
 - Added `Token`, `Scanner`, `TokenType`
 - Support `strings`, `numbers` and `identifiers`
 
-[Unreleased]: https://github.com/RoelAdriaans/yaplox/compare/v0.0.6...HEAD
+[Unreleased]: https://github.com/RoelAdriaans/yaplox/compare/v0.0.7...HEAD
+[0.0.7]: https://github.com/RoelAdriaans/yaplox/releases/tag/v0.0.7
 [0.0.6]: https://github.com/RoelAdriaans/yaplox/releases/tag/v0.0.6
 [0.0.5]: https://github.com/RoelAdriaans/yaplox/releases/tag/v0.0.5
 [0.0.4]: https://github.com/RoelAdriaans/yaplox/releases/tag/v0.0.4

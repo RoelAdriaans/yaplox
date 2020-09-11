@@ -1,14 +1,30 @@
 # See README for installation instructions.
 # This configuration will run all linters in a virtualenv as configured in tox.ini before committing to Git.
 repos:
-  - repo: local
+#  - repo: local
+#    hooks:
+#      - id: linters
+#        name: linters
+#        entry: tox -e linters
+#        language: python
+#        additional_dependencies: [tox]
+#        types: [python]
+  - repo: https://github.com/ambv/black
+    rev: stable
     hooks:
-      - id: linters
-        name: linters
-        entry: tox -e linters
-        language: python
-        additional_dependencies: [tox]
-        types: [python]
+    - id: black
+      language_version: python3.8
+
+  - repo: https://gitlab.com/pycqa/flake8
+    rev: 3.8.3
+    hooks:
+    - id: flake8
+
+  - repo: https://github.com/PyCQA/isort
+    rev: 5.5.2
+    hooks:
+    - id: isort
+
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v3.2.0
     hooks:

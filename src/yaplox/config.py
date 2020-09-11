@@ -19,7 +19,7 @@ class AppConfig(Configuration):
 def set_logging():
     if config.DEBUG:  # pragma: no cover
         level = logging.DEBUG
-    else:
+    else:  # pragma: no cover
         level = logging.WARNING
 
     logging.basicConfig(
