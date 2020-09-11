@@ -111,7 +111,6 @@ class Yaplox:
         Run Yaplox from the console. Accepts one argument as a file that will be
         executed, or no arguments to run in REPL mode.
         """
-        print("Welcome to yaplox.py")
         if len(sys.argv) > 2:
             print(f"Usage: {sys.argv[0]} [script]")
             sys.exit(64)
