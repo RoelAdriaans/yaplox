@@ -3,6 +3,7 @@
 ## High Priority
 
 - [ ] Configure Logging into files and stderr
+- [ ] Create --debug flag when running yaplox
 - [x] Convert Parser._match to accept any number of arguments (*arg) instead of a list
 
 ## Medium Priority

@@ -326,3 +326,34 @@ class TestFunctions:
 
         captured = capsys.readouterr()
         assert captured.out == "1\n2\nnil\n"
+
+    def test_closures(self, capsys):
+        """
+        Test closures, where a function in a function must have access to variables that
+        are created in the first function.
+
+        """
+        statement = [
+            "fun makeCounter() {",
+            "  var i = 0;",
+            "  fun count() {",
+            "    i = i + 1;",
+            "    print i;",
+            "  }",
+            "",
+            "  return count;",
+            "}",
+            "",
+            "var counter = makeCounter();",
+            "counter(); // 1.",
+            "counter(); // 2.",
+        ]
+        source = "\n".join(statement)
+        yaplox = Yaplox()
+        yaplox.run(source)
+
+        assert not yaplox.had_error
+        assert not yaplox.had_runtime_error
+
+        captured = capsys.readouterr()
+        assert captured.out == "1\n2\n"
