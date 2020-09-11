@@ -1,6 +1,7 @@
 from yaplox.environment import Environment
 from yaplox.stmt import Function
 from yaplox.yaplox_callable import YaploxCallable
+from yaplox.yaplox_return_exception import YaploxReturnException
 
 
 class YaploxFunction(YaploxCallable):
@@ -13,8 +14,10 @@ class YaploxFunction(YaploxCallable):
 
         for declared_token, argument in zip(self.declaration.params, arguments):
             environment.define(declared_token.lexeme, argument)
-
-        interpreter.execute_block(self.declaration.body, environment)
+        try:
+            interpreter.execute_block(self.declaration.body, environment)
+        except YaploxReturnException as yaplox_return:
+            return yaplox_return.value
 
     def arity(self) -> int:
         return len(self.declaration.params)

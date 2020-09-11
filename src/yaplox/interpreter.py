@@ -22,6 +22,7 @@ from yaplox.stmt import (
     Function,
     If,
     Print,
+    Return,
     Stmt,
     StmtVisitor,
     Var,
@@ -31,6 +32,7 @@ from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_callable import YaploxCallable
 from yaplox.yaplox_function import YaploxFunction
+from yaplox.yaplox_return_exception import YaploxReturnException
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
 logger = get_logger()
@@ -236,6 +238,12 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def visit_print_stmt(self, stmt: Print) -> None:
         value = self._evaluate(stmt.expression)
         print(self._stringify(value))
+
+    def visit_return_stmt(self, stmt: Return) -> None:
+        value = None
+        if stmt.value:
+            value = self._evaluate(stmt.value)
+        raise YaploxReturnException(value=value)
 
     def visit_var_stmt(self, stmt: "Var") -> None:
         value = None

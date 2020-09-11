@@ -11,7 +11,7 @@ from yaplox.expr import (
     Unary,
     Variable,
 )
-from yaplox.stmt import Block, Expression, Function, If, Print, Stmt, Var, While
+from yaplox.stmt import Block, Expression, Function, If, Print, Return, Stmt, Var, While
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 
@@ -92,12 +92,19 @@ class Parser:
     def _statement(self) -> Stmt:
         if self._match(TokenType.FOR):
             return self._for_statement()
+
         if self._match(TokenType.IF):
             return self._if_statement()
+
         if self._match(TokenType.PRINT):
             return self._print_statement()
+
+        if self._match(TokenType.RETURN):
+            return self._return_statement()
+
         if self._match(TokenType.WHILE):
             return self._while_statement()
+
         if self._match(TokenType.LEFT_BRACE):
             return Block(self._block())
 
@@ -169,6 +176,19 @@ class Parser:
         value = self._expression()
         self._consume(TokenType.SEMICOLON, "Expect ';' after value.")
         return Print(value)
+
+    def _return_statement(self) -> Stmt:
+        keyword = self._previous()
+        value = None
+
+        # If the next value is not a ; we must have something to return,
+        # otherwise we have return; and we return None.
+        if not self._check(TokenType.SEMICOLON):
+            value = self._expression()
+
+        self._consume(TokenType.SEMICOLON, "Expect ';' after return value.")
+
+        return Return(keyword=keyword, value=value)
 
     def _while_statement(self) -> Stmt:
         self._consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")

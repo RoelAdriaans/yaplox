@@ -10,9 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
  - Completing chapter 10
- - Completed upto chapter 10.4.1
+ - Completed upto chapter 10.5.1
  - Implement functions
  - Create the Clock function
+ - Functions return stuff
 
 ### Fixed
 
