@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Completing chapter 11
+- Completed upto chapter 11.3.2
+
+### Changed
+- Removed welcome statement during startup.
+
 ## [0.0.7] - 2020-09-11
 
 ### Added
