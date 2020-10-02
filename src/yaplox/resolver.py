@@ -34,10 +34,11 @@ logger = get_logger()
 
 
 class Resolver(ExprVisitor, StmtVisitor):
-    def __init__(self, interpreter: Interpreter):
+    def __init__(self, interpreter: Interpreter, on_error: False):
         self.interpreter = interpreter
         self.scopes = deque()
         self.stack = deque()
+        self.on_error = on_error
 
     def _resolve_statements(self, statements: List[Stmt]):
         for statement in statements:
@@ -49,6 +50,22 @@ class Resolver(ExprVisitor, StmtVisitor):
     def _resolve_expression(self, expression: Expr):
         expression.accept(self)
 
+    def _resolve_local(self, expr: Expr, name: Token):
+        for idx, scope in enumerate(self.scopes):
+            if name.lexeme in scope:
+                self.interpreter.resolve(expr, len(self.scopes) - 1 - idx)
+                return
+        # Not found. Assume it is global.
+
+    def _resolve_function(self, function: Function):
+        self._begin_scope()
+        for param in function.params:
+            self._declare(param)
+            self._define(param)
+
+        self._resolve_statements(function.body)
+        self._end_scope()
+
     def _begin_scope(self):
         self.scopes.append({})
 
@@ -57,7 +74,7 @@ class Resolver(ExprVisitor, StmtVisitor):
 
     def _declare(self, name: Token):
         """
-        Declare that a variable existsc
+        Declare that a variable exists
         Example is `var a;`
         """
         if len(self.scopes) == 0:
@@ -80,28 +97,42 @@ class Resolver(ExprVisitor, StmtVisitor):
         scope[name.lexeme] = True
 
     def visit_assign_expr(self, expr: Assign):
-        pass
+        self._resolve_expression(expr.value)
+        self._resolve_local(expr, expr.name)
 
     def visit_binary_expr(self, expr: Binary):
-        pass
+        self._resolve_expression(expr.left)
+        self._resolve_expression(expr.right)
 
     def visit_call_expr(self, expr: Call):
-        pass
+        self._resolve_expression(expr.callee)
+
+        for argument in expr.arguments:
+            self._resolve_expression(argument)
 
     def visit_grouping_expr(self, expr: Grouping):
-        pass
+        self._resolve_expression(expr.expression)
 
     def visit_literal_expr(self, expr: Literal):
-        pass
+        """
+        Since a literal expression doesn't mention any variables and doesn't
+        contain any subexpressions, there is no work to do.
+        """
+        return
 
     def visit_logical_expr(self, expr: Logical):
-        pass
+        self._resolve_expression(expr.left)
+        self._resolve_expression(expr.right)
 
     def visit_unary_expr(self, expr: Unary):
-        pass
+        self._resolve_expression(expr.right)
 
     def visit_variable_expr(self, expr: Variable):
-        pass
+        if len(self.scopes) != 0 and self.scopes[-1][expr.name.lexeme] is False:
+            self.on_error(
+                expr.name, "Cannot read local variable in its own initializer."
+            )
+        self._resolve_local(expr, expr.name)
 
     def visit_block_stmt(self, stmt: Block):
         self._begin_scope()
@@ -109,19 +140,26 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._end_scope()
 
     def visit_expression_stmt(self, stmt: Expression):
-        pass
+        self._resolve_expression(stmt.expression)
 
     def visit_function_stmt(self, stmt: Function):
-        pass
+        self._declare(stmt.name)
+        self._define(stmt.name)
+
+        self._resolve_function(stmt)
 
     def visit_if_stmt(self, stmt: If):
-        pass
+        self._resolve_expression(stmt.condition)
+        self._resolve_statement(stmt.then_branch)
+        if stmt.else_branch:
+            self._resolve_statement(stmt.else_branch)
 
     def visit_print_stmt(self, stmt: Print):
-        pass
+        self._resolve_expression(stmt.expression)
 
     def visit_return_stmt(self, stmt: Return):
-        pass
+        if stmt.value:
+            self._resolve_expression(stmt.value)
 
     def visit_var_stmt(self, stmt: Var):
         self._declare(stmt.name)
@@ -132,4 +170,5 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._define(stmt.name)
 
     def visit_while_stmt(self, stmt: While):
-        pass
+        self._resolve_expression(stmt.condition)
+        self._resolve_statement(stmt.body)
