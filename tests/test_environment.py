@@ -77,13 +77,18 @@ class TestEnvironment:
 
         # Set some variables:
         # Set a value to the global, that is available in local
-        global_token = create_token_factory(
-            token_type=TokenType.VAR, lexeme="global_token"
-        )
+        create_token_factory(token_type=TokenType.VAR, lexeme="global_token")
         global_env.define("global_token", "global_token")
 
         # Set a variable on the 1st level:
-        level_1 = create_token_factory(token_type=TokenType.VAR, lexeme="level_1")
+        create_token_factory(token_type=TokenType.VAR, lexeme="level_1")
         local_1.define("level_1", "level_1")
 
         # Get at a distance:
+        assert local_3.get_at(2, "level_1") == "level_1"
+
+        # It shouldn't be able to find this, level too shallow
+        assert local_3.get_at(1, "level_1") is None
+
+        # And try to find a global var
+        assert local_3.get_at(3, "global_token") == "global_token"
