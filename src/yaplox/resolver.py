@@ -37,7 +37,6 @@ class Resolver(ExprVisitor, StmtVisitor):
     def __init__(self, interpreter: Interpreter, on_error=None):
         self.interpreter = interpreter
         self.scopes: Deque = deque()
-        self.stack: Deque = deque()
         self.on_error = on_error
 
     def resolve(self, statements: List[Stmt]):
@@ -131,7 +130,7 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._resolve_expression(expr.right)
 
     def visit_variable_expr(self, expr: Variable):
-        if len(self.scopes) != 0 and self.scopes[-1][expr.name.lexeme] is False:
+        if len(self.scopes) != 0 and self.scopes[-1].get(expr.name.lexeme) is False:
             self.on_error(
                 expr.name, "Cannot read local variable in its own initializer."
             )

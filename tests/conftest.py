@@ -54,3 +54,15 @@ def run_code_lines(capsys):
         return captured
 
     return code_lines
+
+
+@pytest.fixture
+def run_code_block(capsys):
+    def code_block(block: str) -> capsys:
+
+        Yaplox().run(block)
+        captured = capsys.readouterr()
+
+        return captured
+
+    return code_block
