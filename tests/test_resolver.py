@@ -25,7 +25,7 @@ class TestResolver:
         resolver._define(test_token)
         assert resolver.scopes[0]["identifier"] is True
 
-    def test_resolver(self, capsys):
+    def test_resolver(self, run_code_lines):
         lines = [
             'var a = "outer";',
             "{",
@@ -34,11 +34,7 @@ class TestResolver:
             "}",
         ]
 
-        lines = "\n".join(lines)
-
-        Yaplox().run(lines)
-        captured = capsys.readouterr()
-        assert captured.out == "inner\n"
+        assert run_code_lines(lines).out == "inner\n"
 
     def test_function(self, capsys):
         lines = [

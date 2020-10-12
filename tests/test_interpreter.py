@@ -6,7 +6,6 @@ from yaplox.parser import Parser
 from yaplox.scanner import Scanner
 from yaplox.stmt import Expression
 from yaplox.token_type import TokenType
-from yaplox.yaplox import Yaplox
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
 
@@ -230,14 +229,10 @@ class TestInterpreter:
 
         assert result == 9.5
 
-    def test_stringify(self, capsys):
+    def test_stringify(self, run_code_lines):
         lines = [
             "var a;",
             "print(a);",
         ]
 
-        lines = "\n".join(lines)
-
-        Yaplox().run(lines)
-        captured = capsys.readouterr()
-        assert captured.out == "nil\n"
+        assert run_code_lines(lines).out == "nil\n"

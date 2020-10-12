@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, Optional
 
 from yaplox.token import Token
@@ -5,18 +7,18 @@ from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
 
 class Environment:
-    def __init__(self, enclosing: Optional["Environment"] = None):
+    def __init__(self, enclosing: Optional[Environment] = None):
         self.values: Dict[str, Any] = dict()
         self.enclosing = enclosing
 
     def define(self, name: str, value: Any):
         self.values[name] = value
 
-    def _ancestor(self, distance: int) -> "Environment":
+    def _ancestor(self, distance: int) -> Environment:
         environment = self
 
         for _ in range(distance):
-            environment = environment.enclosing
+            environment = environment.enclosing  # type: ignore
 
         return environment
 
@@ -56,4 +58,3 @@ class Environment:
 
     def assign_at(self, distance: int, name: Token, value: Any):
         self._ancestor(distance).values[name.lexeme] = value
-

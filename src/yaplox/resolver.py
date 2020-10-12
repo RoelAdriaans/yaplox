@@ -1,5 +1,5 @@
 from collections import deque
-from typing import Any, List, Union
+from typing import Deque, List
 
 from structlog import get_logger
 
@@ -34,10 +34,10 @@ logger = get_logger()
 
 
 class Resolver(ExprVisitor, StmtVisitor):
-    def __init__(self, interpreter: Interpreter, on_error: False):
+    def __init__(self, interpreter: Interpreter, on_error=None):
         self.interpreter = interpreter
-        self.scopes = deque()
-        self.stack = deque()
+        self.scopes: Deque = deque()
+        self.stack: Deque = deque()
         self.on_error = on_error
 
     def resolve(self, statements: List[Stmt]):
