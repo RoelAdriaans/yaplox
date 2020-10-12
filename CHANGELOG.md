@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Completing chapter 11
-- Completed upto chapter 11.3.2
+- Completed upto chapter 11.4.3
 
 ### Changed
 - Removed welcome statement during startup.

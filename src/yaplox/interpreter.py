@@ -223,8 +223,11 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def visit_assign_expr(self, expr: "Assign") -> Any:
         value = self._evaluate(expr.value)
-
-        self.environment.assign(expr.name, value)
+        distance = self.locals.get(expr)
+        if distance:
+            self.environment.assign_at(distance, expr.name, value)
+        else:
+            self.globals.assign(expr.name, value)
 
         return value
 

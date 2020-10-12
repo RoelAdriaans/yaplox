@@ -6,6 +6,7 @@ from yaplox.__version__ import __VERSION__
 from yaplox.config import config  # noqa: F401
 from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
+from yaplox.resolver import Resolver
 from yaplox.scanner import Scanner
 from yaplox.token import Token
 from yaplox.token_type import TokenType
@@ -35,6 +36,9 @@ class Yaplox:
         if self.had_error:
             logger.debug("Error after parsing")
             return
+
+        resolver = Resolver(interpreter=self.interpreter, on_error=self.runtime_error)
+        resolver.resolve(statements)
 
         self.interpreter.interpret(statements, on_error=self.runtime_error)
 

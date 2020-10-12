@@ -53,3 +53,7 @@ class Environment:
             return
 
         raise YaploxRuntimeError(name, f"Undefined variable '{name.lexeme}'.")
+
+    def assign_at(self, distance: int, name: Token, value: Any):
+        self._ancestor(distance).values[name.lexeme] = value
+

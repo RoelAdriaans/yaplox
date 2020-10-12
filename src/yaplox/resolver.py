@@ -40,6 +40,9 @@ class Resolver(ExprVisitor, StmtVisitor):
         self.stack = deque()
         self.on_error = on_error
 
+    def resolve(self, statements: List[Stmt]):
+        self._resolve_statements(statements)
+
     def _resolve_statements(self, statements: List[Stmt]):
         for statement in statements:
             self._resolve_statement(statement)

@@ -1,6 +1,6 @@
 from yaplox.resolver import Resolver
-from yaplox.token import Token
 from yaplox.token_type import TokenType
+from yaplox.yaplox import Yaplox
 
 
 class TestResolver:
@@ -24,3 +24,37 @@ class TestResolver:
         # And define the token
         resolver._define(test_token)
         assert resolver.scopes[0]["identifier"] is True
+
+    def test_resolver(self, capsys):
+        lines = [
+            'var a = "outer";',
+            "{",
+            '  var a = "inner";',
+            "  print a;",
+            "}",
+        ]
+
+        lines = "\n".join(lines)
+
+        Yaplox().run(lines)
+        captured = capsys.readouterr()
+        assert captured.out == "inner\n"
+
+    def test_function(self, capsys):
+        lines = [
+            'var a = "global";',
+            "{",
+            "  fun showA() {",
+            "    print a;",
+            "  }",
+            "",
+            "  showA();",
+            '  var a = "block";',
+            "  showA();",
+            "}",
+        ]
+        lines = "\n".join(lines)
+
+        Yaplox().run(lines)
+        captured = capsys.readouterr()
+        assert captured.out == "\n"
