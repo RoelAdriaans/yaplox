@@ -37,7 +37,7 @@ class Yaplox:
             logger.debug("Error after parsing")
             return
 
-        resolver = Resolver(interpreter=self.interpreter, on_error=self.runtime_error)
+        resolver = Resolver(interpreter=self.interpreter, on_error=self.token_error)
         resolver.resolve(statements)
 
         self.interpreter.interpret(statements, on_error=self.runtime_error)
