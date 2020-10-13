@@ -53,9 +53,9 @@ class Resolver(ExprVisitor, StmtVisitor):
         expression.accept(self)
 
     def _resolve_local(self, expr: Expr, name: Token):
-        for idx, scope in enumerate(self.scopes):
+        for idx, scope in enumerate(reversed(self.scopes)):
             if name.lexeme in scope:
-                self.interpreter.resolve(expr, len(self.scopes) - 1 - idx)
+                self.interpreter.resolve(expr, idx)
                 return
         # Not found. Assume it is global.
 

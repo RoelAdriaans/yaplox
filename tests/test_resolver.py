@@ -50,3 +50,40 @@ class TestResolver:
         """
 
         assert run_code_block(lines).out == "global\nglobal\n"
+
+    def test_cannot_resolve_name(self, run_code_block):
+        code = """
+        {
+            var a = a + 3;
+        }
+        """
+        assert (
+            "[line 3] Error  at 'a' : "
+            "Cannot read local variable in its own initializer."
+            in run_code_block(code).err
+        )
+
+    def test_limited_nested(self, run_code_block):
+        """
+        Limited test from test_nested in test_statement. Validated with clox and jlox,
+        the result must be `inner a`.
+        """
+
+        source = """
+        var a = "global a";
+        var q = "global q";
+        {
+          var a = "outer a";
+          var w = "outer w";
+          {
+            var a = "inner a";
+            var e = "inner e";
+            print a;
+            print e;
+            print w;
+            print q;
+          }
+        }
+        """
+
+        assert "inner a\ninner e\nouter w\nglobal q\n" == run_code_block(source).out
