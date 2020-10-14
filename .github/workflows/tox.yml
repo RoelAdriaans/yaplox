@@ -12,14 +12,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
         python-version: ${{ matrix.python-version }}
+
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install tox poetry
+        # Following step is required for python 3.9: Build depenencies are missing
+        apt-get update && apt-get build-dep python3-lxml -y
 
     - name: Run linters in tox
       run: tox -e linters
