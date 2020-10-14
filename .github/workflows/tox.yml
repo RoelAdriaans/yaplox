@@ -23,7 +23,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install tox poetry
         # Following step is required for python 3.9: Build depenencies are missing
-        sudo apt-get update && sudo apt-get build-dep python3-lxml -y
+        sudo apt-get update && sudo apt-get libxml2-dev libxslt-dev python-dev -y
 
     - name: Run linters in tox
       run: tox -e linters
