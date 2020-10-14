@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.8] - 2020-10-14
+
+### Added
+
+- Completing chapter 11
+- Create resolver
+- Create function_type.py enum
+- Create pytest fixtures to run a block of code, or an list of lines
+
+### Changed
+
+- Removed welcome statement during startup.
+- Bumped version in `pyproject.toml`, this wasn't done in previous releases
+
 ## [0.0.7] - 2020-09-11
 
 ### Added
