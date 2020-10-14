@@ -39,6 +39,10 @@ class Yaplox:
 
         resolver = Resolver(interpreter=self.interpreter, on_error=self.token_error)
         resolver.resolve(statements)
+        # Stop if there was a resolution error.
+        if self.had_error:
+            logger.debug("Error after resolving")
+            return
 
         self.interpreter.interpret(statements, on_error=self.runtime_error)
 

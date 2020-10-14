@@ -15,6 +15,7 @@ from yaplox.expr import (
     Unary,
     Variable,
 )
+from yaplox.function_type import FunctionType
 from yaplox.interpreter import Interpreter
 from yaplox.stmt import (
     Block,
@@ -38,6 +39,7 @@ class Resolver(ExprVisitor, StmtVisitor):
         self.interpreter = interpreter
         self.scopes: Deque = deque()
         self.on_error = on_error
+        self.current_function = FunctionType.NONE
 
     def resolve(self, statements: List[Stmt]):
         self._resolve_statements(statements)
@@ -59,7 +61,10 @@ class Resolver(ExprVisitor, StmtVisitor):
                 return
         # Not found. Assume it is global.
 
-    def _resolve_function(self, function: Function):
+    def _resolve_function(self, function: Function, type: FunctionType):
+        enclosing_function = self.current_function
+        self.current_function = type
+
         self._begin_scope()
         for param in function.params:
             self._declare(param)
@@ -67,6 +72,7 @@ class Resolver(ExprVisitor, StmtVisitor):
 
         self._resolve_statements(function.body)
         self._end_scope()
+        self.current_function = enclosing_function
 
     def _begin_scope(self):
         self.scopes.append({})
@@ -84,6 +90,9 @@ class Resolver(ExprVisitor, StmtVisitor):
 
         # Look at the last scope
         scope = self.scopes[-1]
+        if name.lexeme in scope:
+            self.on_error(name, "Already variable with this name in this scope.")
+
         scope[name.lexeme] = False
 
     def _define(self, name: Token):
@@ -148,7 +157,7 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._declare(stmt.name)
         self._define(stmt.name)
 
-        self._resolve_function(stmt)
+        self._resolve_function(stmt, FunctionType.FUNCTION)
 
     def visit_if_stmt(self, stmt: If):
         self._resolve_expression(stmt.condition)
@@ -160,6 +169,9 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._resolve_expression(stmt.expression)
 
     def visit_return_stmt(self, stmt: Return):
+        if self.current_function == FunctionType.NONE:
+            self.on_error(stmt.keyword, "Can't return from top-level code.")
+
         if stmt.value:
             self._resolve_expression(stmt.value)
 

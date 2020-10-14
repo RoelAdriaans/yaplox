@@ -87,3 +87,25 @@ class TestResolver:
         """
 
         assert "inner a\ninner e\nouter w\nglobal q\n" == run_code_block(source).out
+
+    def test_multiple_assignment(self, run_code_block):
+        """
+        Example 11.5, resulution error. Cannor redeclare
+        """
+
+        code = """
+        fun bad() {
+            var a = "first";
+            var a = "second";
+        }
+        """
+        assert (
+            "Error  at 'a' : Already variable with this name in this scope."
+            in run_code_block(code).err
+        )
+
+    def test_invalid_return(self, run_code_block):
+        """ Return without a function is not correct """
+        code = 'return "at top level";'
+
+        assert "Can't return from top-level code." in run_code_block(code).err
