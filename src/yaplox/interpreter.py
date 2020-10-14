@@ -42,6 +42,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
     def __init__(self):
         self.globals = Environment()
         self.environment = self.globals
+        self.locals = dict()
 
         self.globals.define("clock", Clock())
 
@@ -59,6 +60,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     def _execute(self, stmt: Stmt):
         return stmt.accept(self)
+
+    def resolve(self, expr: Expr, depth: int):
+        self.locals[expr] = depth
 
     @staticmethod
     def _stringify(obj) -> str:
@@ -208,12 +212,22 @@ class Interpreter(ExprVisitor, StmtVisitor):
         return expr.accept(self)
 
     def visit_variable_expr(self, expr: "Variable") -> Any:
-        return self.environment.get(expr.name)
+        return self._look_up_variable(expr.name, expr)
+
+    def _look_up_variable(self, name: Token, expr: Expr) -> Any:
+        distance = self.locals.get(expr)
+        if distance is not None:
+            return self.environment.get_at(distance, name.lexeme)
+        else:
+            return self.globals.get(name)
 
     def visit_assign_expr(self, expr: "Assign") -> Any:
         value = self._evaluate(expr.value)
-
-        self.environment.assign(expr.name, value)
+        distance = self.locals.get(expr)
+        if distance:
+            self.environment.assign_at(distance, expr.name, value)
+        else:
+            self.globals.assign(expr.name, value)
 
         return value
 

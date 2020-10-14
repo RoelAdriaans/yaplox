@@ -6,6 +6,7 @@ from yaplox.__version__ import __VERSION__
 from yaplox.config import config  # noqa: F401
 from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
+from yaplox.resolver import Resolver
 from yaplox.scanner import Scanner
 from yaplox.token import Token
 from yaplox.token_type import TokenType
@@ -34,6 +35,13 @@ class Yaplox:
 
         if self.had_error:
             logger.debug("Error after parsing")
+            return
+
+        resolver = Resolver(interpreter=self.interpreter, on_error=self.token_error)
+        resolver.resolve(statements)
+        # Stop if there was a resolution error.
+        if self.had_error:
+            logger.debug("Error after resolving")
             return
 
         self.interpreter.interpret(statements, on_error=self.runtime_error)
@@ -111,7 +119,6 @@ class Yaplox:
         Run Yaplox from the console. Accepts one argument as a file that will be
         executed, or no arguments to run in REPL mode.
         """
-        print("Welcome to yaplox.py")
         if len(sys.argv) > 2:
             print(f"Usage: {sys.argv[0]} [script]")
             sys.exit(64)

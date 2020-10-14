@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from typing import Any, Dict, Optional
 
 from yaplox.token import Token
@@ -5,12 +7,26 @@ from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
 
 class Environment:
-    def __init__(self, enclosing: Optional["Environment"] = None):
+    def __init__(self, enclosing: Optional[Environment] = None):
         self.values: Dict[str, Any] = dict()
         self.enclosing = enclosing
 
     def define(self, name: str, value: Any):
         self.values[name] = value
+
+    def _ancestor(self, distance: int) -> Environment:
+        environment = self
+
+        for _ in range(distance):
+            environment = environment.enclosing  # type: ignore
+
+        return environment
+
+    def get_at(self, distance: int, name: str) -> Any:
+        """
+        Return a variable at a distance
+        """
+        return self._ancestor(distance=distance).values.get(name)
 
     def get(self, name: Token) -> Any:
         try:
@@ -39,3 +55,6 @@ class Environment:
             return
 
         raise YaploxRuntimeError(name, f"Undefined variable '{name.lexeme}'.")
+
+    def assign_at(self, distance: int, name: Token, value: Any):
+        self._ancestor(distance).values[name.lexeme] = value
