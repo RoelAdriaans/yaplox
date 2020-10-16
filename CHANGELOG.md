@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Use [poetry-dynamic-versioning](https://github.com/mtkennerly/poetry-dynamic-versioning) to generate version numbers
+
 ## [0.0.8] - 2020-10-14
 
 ### Added

@@ -2,7 +2,7 @@ import sys
 
 from structlog import get_logger
 
-from yaplox.__version__ import __VERSION__
+from yaplox.__version__ import __version__
 from yaplox.config import config  # noqa: F401
 from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
@@ -92,7 +92,7 @@ class Yaplox:
         """
         Run a REPL prompt. This prompt can be quit by pressing CTRL-C or CTRL-D
         """
-        print(f"Welcome to Yaplox {__VERSION__}")
+        print(f"Welcome to Yaplox {__version__}")
         print("Press CTRL-C or CTRL-D to exit")
 
         while True:
