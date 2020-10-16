@@ -2,7 +2,7 @@ import sys
 
 from structlog import get_logger
 
-from yaplox.__version__ import __VERSION__
+from yaplox.__version__ import __version__
 from yaplox.config import config  # noqa: F401
 from yaplox.interpreter import Interpreter
 from yaplox.parser import Parser
@@ -68,13 +68,13 @@ class Yaplox:
         self.had_error = True
 
     @staticmethod
-    def _load_file(file: str) -> str:
+    def _load_file(file: str) -> str:  # pragma: no cover
         with open(file) as f:
             content = f.readlines()
             lines = "\n".join(content)
             return lines
 
-    def run_file(self, file: str):
+    def run_file(self, file: str):  # pragma: no cover
         """
         Run yaplox with `file` as filename for the source input
         """
@@ -88,11 +88,11 @@ class Yaplox:
         if self.had_runtime_error:
             sys.exit(70)
 
-    def run_prompt(self):
+    def run_prompt(self):  # pragma: no cover
         """
         Run a REPL prompt. This prompt can be quit by pressing CTRL-C or CTRL-D
         """
-        print(f"Welcome to Yaplox {__VERSION__}")
+        print(f"Welcome to Yaplox {__version__}")
         print("Press CTRL-C or CTRL-D to exit")
 
         while True:
@@ -109,12 +109,12 @@ class Yaplox:
                 # Catch CTRL-C or CTRL-D (EOF)
                 self.quit_gracefully()
 
-    def quit_gracefully(self):
+    def quit_gracefully(self):  # pragma: no cover
         print("So Long, and Thanks for All the Fish")
         sys.exit(0)
 
     @staticmethod
-    def main():
+    def main():  # pragma: no cover
         """
         Run Yaplox from the console. Accepts one argument as a file that will be
         executed, or no arguments to run in REPL mode.

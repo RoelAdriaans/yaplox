@@ -29,5 +29,11 @@ yaplox = "yaplox.yaplox:Yaplox.main"
 
 
 [build-system]
-requires = ["poetry>=0.12"]
+requires = ["poetry>=1.0.2", "poetry-dynamic-versioning"]
 build-backend = "poetry.masonry.api"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+
+[tool.poetry-dynamic-versioning.substitution]
+files = [ "src/yaplox/__version__.py"]
