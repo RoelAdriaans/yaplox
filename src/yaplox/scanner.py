@@ -107,7 +107,7 @@ class Scanner:
         """ Scan tokens"""
         c = self._advance()
 
-        # In the orginal java implementation this is implemented with a switch
+        # In the original java implementation this is implemented with a switch
         # statement. Python does not have this construct (yet), the closest thing is an
         # dict:
 
