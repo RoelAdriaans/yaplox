@@ -5,6 +5,7 @@ from yaplox.expr import (
     Binary,
     Call,
     Expr,
+    Get,
     Grouping,
     Literal,
     Logical,
@@ -338,6 +339,11 @@ class Parser:
         while True:
             if self._match(TokenType.LEFT_PAREN):
                 expr = self._finish_call(expr)
+            elif self._match(TokenType.DOT):
+                name = self._consume(
+                    TokenType.IDENTIFIER, "Expect property name after '.'."
+                )
+                expr = Get(expr, name)
             else:
                 break
         return expr

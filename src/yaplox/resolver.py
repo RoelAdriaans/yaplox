@@ -9,6 +9,7 @@ from yaplox.expr import (
     Call,
     Expr,
     ExprVisitor,
+    Get,
     Grouping,
     Literal,
     Logical,
@@ -121,6 +122,9 @@ class Resolver(ExprVisitor, StmtVisitor):
 
         for argument in expr.arguments:
             self._resolve_expression(argument)
+
+    def visit_get_expr(self, expr: Get):
+        self._resolve_expression(expr.obj)
 
     def visit_grouping_expr(self, expr: Grouping):
         self._resolve_expression(expr.expression)

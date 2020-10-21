@@ -25,6 +25,10 @@ class ExprVisitor(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def visit_get_expr(self, expr: Get):
+        raise NotImplementedError
+
+    @abstractmethod
     def visit_grouping_expr(self, expr: Grouping):
         raise NotImplementedError
 
@@ -81,6 +85,16 @@ class Call(Expr):
     def accept(self, visitor: ExprVisitor):
         """ Create a accept method that calls the visitor. """
         return visitor.visit_call_expr(self)
+
+
+class Get(Expr):
+    def __init__(self, obj: Expr, name: Token):
+        self.obj = obj
+        self.name = name
+
+    def accept(self, visitor: ExprVisitor):
+        """ Create a accept method that calls the visitor. """
+        return visitor.visit_get_expr(self)
 
 
 class Grouping(Expr):

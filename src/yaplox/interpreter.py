@@ -10,6 +10,7 @@ from yaplox.expr import (
     Call,
     Expr,
     ExprVisitor,
+    Get,
     Grouping,
     Literal,
     Logical,
@@ -34,6 +35,7 @@ from yaplox.token_type import TokenType
 from yaplox.yaplox_callable import YaploxCallable
 from yaplox.yaplox_class import YaploxClass
 from yaplox.yaplox_function import YaploxFunction
+from yaplox.yaplox_instance import YaploxInstance
 from yaplox.yaplox_return_exception import YaploxReturnException
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
@@ -161,6 +163,13 @@ class Interpreter(ExprVisitor, StmtVisitor):
                 f"Expected {function.arity()} arguments but got {len(arguments)}.",
             )
         return function.call(self, arguments)
+
+    def visit_get_expr(self, expr: Get):
+        obj = self._evaluate(expr.obj)
+        if isinstance(obj, YaploxInstance):
+            return obj.get(expr.name)
+
+        raise YaploxRuntimeError(expr.name, "Only instances have properties.")
 
     def visit_grouping_expr(self, expr: Grouping):
         return self._evaluate(expr.expression)
