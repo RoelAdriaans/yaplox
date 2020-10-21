@@ -13,6 +13,7 @@ from yaplox.expr import (
     Grouping,
     Literal,
     Logical,
+    Set,
     Unary,
     Variable,
 )
@@ -139,6 +140,10 @@ class Resolver(ExprVisitor, StmtVisitor):
     def visit_logical_expr(self, expr: Logical):
         self._resolve_expression(expr.left)
         self._resolve_expression(expr.right)
+
+    def visit_set_expr(self, expr: Set):
+        self._resolve_expression(expr.value)
+        self._resolve_expression(expr.obj)
 
     def visit_unary_expr(self, expr: Unary):
         self._resolve_expression(expr.right)

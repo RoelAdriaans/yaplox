@@ -14,11 +14,14 @@ class YaploxInstance:
         self.klass = klass
         self.fields: Dict[str, Any] = {}
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.klass.name} instance"
 
-    def get(self, name: Token):
+    def get(self, name: Token) -> Any:
         try:
             return self.fields[name.lexeme]
         except KeyError:
-            YaploxRuntimeError(name, f"Undefined property '{name.lexeme}'.")
+            raise YaploxRuntimeError(name, f"Undefined property '{name.lexeme}'.")
+
+    def set(self, name: Token, value: Any):
+        self.fields[name.lexeme] = value

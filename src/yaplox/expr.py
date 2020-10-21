@@ -41,6 +41,10 @@ class ExprVisitor(ABC):
         raise NotImplementedError
 
     @abstractmethod
+    def visit_set_expr(self, expr: Set):
+        raise NotImplementedError
+
+    @abstractmethod
     def visit_unary_expr(self, expr: Unary):
         raise NotImplementedError
 
@@ -124,6 +128,17 @@ class Logical(Expr):
     def accept(self, visitor: ExprVisitor):
         """ Create a accept method that calls the visitor. """
         return visitor.visit_logical_expr(self)
+
+
+class Set(Expr):
+    def __init__(self, obj: Expr, name: Token, value: Expr):
+        self.obj = obj
+        self.name = name
+        self.value = value
+
+    def accept(self, visitor: ExprVisitor):
+        """ Create a accept method that calls the visitor. """
+        return visitor.visit_set_expr(self)
 
 
 class Unary(Expr):

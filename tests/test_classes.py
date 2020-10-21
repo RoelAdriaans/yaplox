@@ -18,3 +18,27 @@ class TestClasses:
         print bagel;
         """
         assert run_code_block(lines).out == "Bagel instance\n"
+
+    def test_class_set_get(self, run_code_block):
+        lines = """
+        class Bagel {}
+        var bagel = Bagel();
+        bagel.sprinkles = "Chocolate";
+        print bagel.sprinkles;
+        """
+
+        assert run_code_block(lines).err == ""
+        assert run_code_block(lines).out == "Chocolate\n"
+
+    def test_class_not_set_get(self, run_code_block):
+        lines = """
+        class Bagel {}
+        var bagel = Bagel();
+        print bagel.sprinkles;
+        """
+
+        assert (
+            run_code_block(lines).err
+            == "Undefined property 'sprinkles'. in line [line4]\n"
+        )
+        assert run_code_block(lines).out == ""

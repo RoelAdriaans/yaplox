@@ -14,6 +14,7 @@ from yaplox.expr import (
     Grouping,
     Literal,
     Logical,
+    Set,
     Unary,
     Variable,
 )
@@ -186,6 +187,16 @@ class Interpreter(ExprVisitor, StmtVisitor):
             if not self._is_truthy(left):
                 return left
         return self._evaluate(expr.right)
+
+    def visit_set_expr(self, expr: Set):
+        obj = self._evaluate(expr.obj)
+
+        if not isinstance(obj, YaploxInstance):
+            raise YaploxRuntimeError(expr.name, "Only instances have fields.")
+
+        value = self._evaluate(expr.value)
+        obj.set(expr.name, value)
+        return value
 
     def visit_unary_expr(self, expr: Unary):
         right = self._evaluate(expr.right)
