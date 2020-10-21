@@ -9,7 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Completing chapter 12
+- Completed upto chapter 12.2
 - Use [poetry-dynamic-versioning](https://github.com/mtkennerly/poetry-dynamic-versioning) to generate version numbers
+
+### Changed
+
+- In generate_ast.py use `from __future__ import annotations` in generated files
 
 ## [0.0.8] - 2020-10-14
 

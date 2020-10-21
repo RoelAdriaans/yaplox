@@ -38,7 +38,7 @@ class GenerateAst:
             base_name="Stmt",
             types=[
                 "Block      : List<Stmt> statements",
-                # "Class      : Token name, List<Stmt.Function> methods",
+                "Class      : Token name, List<Function> methods",
                 "Expression : Expr expression",
                 "Function   : Token name, List<Token> params, List<Stmt> body",
                 "If      : Expr condition, Stmt thenBranch, Optional[Stmt] elseBranch",

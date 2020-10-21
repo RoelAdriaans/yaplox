@@ -18,6 +18,7 @@ from yaplox.expr import (
 )
 from yaplox.stmt import (
     Block,
+    Class,
     Expression,
     Function,
     If,
@@ -31,6 +32,7 @@ from yaplox.stmt import (
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_callable import YaploxCallable
+from yaplox.yaplox_class import YaploxClass
 from yaplox.yaplox_function import YaploxFunction
 from yaplox.yaplox_return_exception import YaploxReturnException
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
@@ -232,6 +234,11 @@ class Interpreter(ExprVisitor, StmtVisitor):
         return value
 
     # statement stuff
+    def visit_class_stmt(self, stmt: Class):
+        self.environment.define(stmt.name.lexeme, None)
+        klass = YaploxClass(stmt.name.lexeme)
+        self.environment.assign(stmt.name, klass)
+
     def visit_expression_stmt(self, stmt: Expression) -> None:
         return self._evaluate(stmt.expression)
 

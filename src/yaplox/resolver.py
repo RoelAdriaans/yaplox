@@ -19,6 +19,7 @@ from yaplox.function_type import FunctionType
 from yaplox.interpreter import Interpreter
 from yaplox.stmt import (
     Block,
+    Class,
     Expression,
     Function,
     If,
@@ -149,6 +150,10 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._begin_scope()
         self._resolve_statements(stmt.statements)
         self._end_scope()
+
+    def visit_class_stmt(self, stmt: Class):
+        self._declare(stmt.name)
+        self._define(stmt.name)
 
     def visit_expression_stmt(self, stmt: Expression):
         self._resolve_expression(stmt.expression)
