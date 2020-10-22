@@ -64,6 +64,15 @@ To run this manually, run:
 ```shell
 pre-commit run --all-files
 ```
+#### Update pre-commit
+
+Update the `.pre-commit-config.yaml` with the command:
+
+```shell
+pre-commit autoupdate
+```
+
+This command will go online and find the latest versions.
 
 [pre-commit]: https://pre-commit.com/
 
