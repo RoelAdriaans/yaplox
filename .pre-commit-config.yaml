@@ -37,5 +37,3 @@ repos:
     - id: check-merge-conflict
     - id: debug-statements
       language_version: python3
-
-    - id: trailing-whitespace
