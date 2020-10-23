@@ -162,6 +162,11 @@ class Resolver(ExprVisitor, StmtVisitor):
 
     def visit_class_stmt(self, stmt: Class):
         self._declare(stmt.name)
+
+        for method in stmt.methods:
+            declaration = FunctionType.METHOD
+            self._resolve_function(method, declaration)
+
         self._define(stmt.name)
 
     def visit_expression_stmt(self, stmt: Expression):

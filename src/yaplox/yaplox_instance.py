@@ -21,7 +21,13 @@ class YaploxInstance:
         try:
             return self.fields[name.lexeme]
         except KeyError:
-            raise YaploxRuntimeError(name, f"Undefined property '{name.lexeme}'.")
+            pass
+
+        method = self.klass.find_method(name.lexeme)
+        if method is not None:
+            return method
+
+        raise YaploxRuntimeError(name, f"Undefined property '{name.lexeme}'.")
 
     def set(self, name: Token, value: Any):
         self.fields[name.lexeme] = value

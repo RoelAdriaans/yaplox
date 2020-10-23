@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, Dict, List
 
 from structlog import get_logger
 
@@ -256,7 +256,14 @@ class Interpreter(ExprVisitor, StmtVisitor):
     # statement stuff
     def visit_class_stmt(self, stmt: Class):
         self.environment.define(stmt.name.lexeme, None)
-        klass = YaploxClass(stmt.name.lexeme)
+
+        methods: Dict[str, YaploxFunction] = {}
+
+        for method in stmt.methods:
+            function = YaploxFunction(method, self.environment)
+            methods[method.name.lexeme] = function
+
+        klass = YaploxClass(stmt.name.lexeme, methods)
         self.environment.assign(stmt.name, klass)
 
     def visit_expression_stmt(self, stmt: Expression) -> None:

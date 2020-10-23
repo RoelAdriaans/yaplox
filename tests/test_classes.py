@@ -42,3 +42,16 @@ class TestClasses:
             == "Undefined property 'sprinkles'. in line [line4]\n"
         )
         assert run_code_block(lines).out == ""
+
+    def test_class_method_callable(self, run_code_block):
+        lines = """
+        class Bacon {
+          eat() {
+            print "Crunch crunch crunch!";
+          }
+        }
+
+        Bacon().eat(); // Prints "Crunch crunch crunch!".
+        """
+        assert run_code_block(lines).err == ""
+        assert run_code_block(lines).out == "Crunch crunch crunch!\n"
