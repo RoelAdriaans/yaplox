@@ -76,16 +76,11 @@ class TestClasses:
     def test_class_call_function_field(self, run_code_block):
         # We cannot access a field on the Class itself
         lines = """
-        class Foo {
-            init() {
-                this.variable = 42;
-            }
-        }
-        print Foo.variable;
+        class Foo {}
+        Foo.variable  = 42;
         """
         assert (
-            run_code_block(lines).err
-            == "Only instances have properties. in line [line7]\n"
+            run_code_block(lines).err == "Only instances have fields. in line [line3]\n"
         )
         assert run_code_block(lines).out == ""
 
