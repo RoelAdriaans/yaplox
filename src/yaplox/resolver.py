@@ -3,6 +3,7 @@ from typing import Deque, List
 
 from structlog import get_logger
 
+from yaplox.class_type import ClassType
 from yaplox.expr import (
     Assign,
     Binary,
@@ -44,6 +45,7 @@ class Resolver(ExprVisitor, StmtVisitor):
         self.scopes: Deque = deque()
         self.on_error = on_error
         self.current_function = FunctionType.NONE
+        self.current_class = ClassType.NONE
 
     def resolve(self, statements: List[Stmt]):
         self._resolve_statements(statements)
@@ -143,6 +145,9 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._resolve_expression(expr.right)
 
     def visit_this_expr(self, expr: This):
+        if self.current_class == ClassType.NONE:
+            self.on_error(expr.keyword, "Can't use 'this' outside of a class.")
+
         self._resolve_local(expr, expr.keyword)
 
     def visit_set_expr(self, expr: Set):
@@ -165,6 +170,9 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._end_scope()
 
     def visit_class_stmt(self, stmt: Class):
+        enclosing_class = self.current_class
+        self.current_class = ClassType.CLASS
+
         self._declare(stmt.name)
         self._define(stmt.name)
 
@@ -176,6 +184,8 @@ class Resolver(ExprVisitor, StmtVisitor):
             self._resolve_function(method, declaration)
 
         self._end_scope()
+
+        self.current_class = enclosing_class
 
     def visit_expression_stmt(self, stmt: Expression):
         self._resolve_expression(stmt.expression)

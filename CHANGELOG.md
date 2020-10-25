@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Completing chapter 12
-- Completed upto chapter 12.5.1
+- Completed upto chapter 12.6
 - Class can be printed, instantiated, get, set expression, methods on classes, implement `this`
 - YaploxClass created, and YaploxCallable
 - Use [poetry-dynamic-versioning](https://github.com/mtkennerly/poetry-dynamic-versioning) to generate version numbers

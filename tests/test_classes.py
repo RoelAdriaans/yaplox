@@ -103,3 +103,23 @@ class TestClasses:
         """
         assert run_code_block(lines).err == ""
         assert run_code_block(lines).out == "Thing instance\n"
+
+    def test_this_outside_class(self, run_code_block):
+        lines = "print this;"
+        assert (
+            run_code_block(lines).err
+            == "[line 1] Error  at 'this' : Can't use 'this' outside of a class.\n"
+        )
+        assert run_code_block(lines).out == ""
+
+    def test_this_in_fuction(self, run_code_block):
+        lines = """
+        fun foo() {
+            print this;
+        }
+        """
+        assert (
+            run_code_block(lines).err
+            == "[line 3] Error  at 'this' : Can't use 'this' outside of a class.\n"
+        )
+        assert run_code_block(lines).out == ""
