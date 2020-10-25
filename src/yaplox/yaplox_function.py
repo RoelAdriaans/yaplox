@@ -32,6 +32,9 @@ class YaploxFunction(YaploxCallable):
         try:
             interpreter.execute_block(self.declaration.body, environment)
         except YaploxReturnException as yaplox_return:
+            if self.is_initializer:
+                # When we're in init(), return this as an early return
+                return self.closure.get_at(0, "this")
             return yaplox_return.value
 
         if self.is_initializer:

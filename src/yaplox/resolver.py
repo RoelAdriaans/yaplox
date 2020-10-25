@@ -181,6 +181,9 @@ class Resolver(ExprVisitor, StmtVisitor):
 
         for method in stmt.methods:
             declaration = FunctionType.METHOD
+            if method.name.lexeme == "init":
+                declaration = FunctionType.INITIALIZER
+
             self._resolve_function(method, declaration)
 
         self._end_scope()
@@ -210,6 +213,8 @@ class Resolver(ExprVisitor, StmtVisitor):
             self.on_error(stmt.keyword, "Can't return from top-level code.")
 
         if stmt.value:
+            if self.current_function == FunctionType.INITIALIZER:
+                self.on_error(stmt.keyword, "Can't return a value from an initializer.")
             self._resolve_expression(stmt.value)
 
     def visit_var_stmt(self, stmt: Var):

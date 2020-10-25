@@ -58,7 +58,7 @@ class TestClasses:
 
     def test_class_call_function_method(self, run_code_block):
         # We cannot call a method on a class itselve, we need an instance.
-        # Lox does not support static methods
+        # Yaplox does not support static methods, yet?
         lines = """
         class Foo {
             init() {
@@ -179,3 +179,32 @@ class TestClasses:
             run_code_block(lines).out
             == "Appelflappen\nAppelflappen\nAppelflap instance\n"
         )
+
+    def test_class_return_from_init(self, run_code_block):
+        # We cannot return a value from an init
+        lines = """
+        class Foo {
+          init() {
+            return "something else";
+          }
+        }
+        """
+        assert (
+            run_code_block(lines).err == "[line 4] Error  at 'return' : "
+            "Can't return a value from an initializer.\n"
+        )
+        assert run_code_block(lines).out == ""
+
+    def test_class_empty_return_from_init(self, run_code_block):
+        # But we can have an early return in init!
+        lines = """
+        class Foo {
+          init() {
+            return;
+          }
+        }
+        var foo = Foo();
+        print foo;
+        """
+        assert run_code_block(lines).err == ""
+        assert run_code_block(lines).out == "Foo instance\n"
