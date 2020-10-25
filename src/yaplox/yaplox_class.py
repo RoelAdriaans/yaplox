@@ -13,10 +13,19 @@ if TYPE_CHECKING:
 class YaploxClass(YaploxCallable):
     def call(self, interpreter: Interpreter, arguments: List[Any]):
         instance = YaploxInstance(klass=self)
+        initializer = self.find_method("init")
+        if initializer is not None:
+            initializer.bind(instance=instance).call(
+                interpreter=interpreter, arguments=arguments
+            )
         return instance
 
     def arity(self) -> int:
-        return 0
+        initializer = self.find_method("init")
+        if initializer is not None:
+            return initializer.arity()
+        else:
+            return 0
 
     def __init__(self, name: str, methods: Dict[str, YaploxFunction]):
         self.name = name

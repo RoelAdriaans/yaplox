@@ -56,6 +56,23 @@ class TestClasses:
         assert run_code_block(lines).err == ""
         assert run_code_block(lines).out == "Crunch crunch crunch!\n"
 
+    def test_class_call_function_method(self, run_code_block):
+        # We cannot call a method on a class itselve, we need an instance.
+        # Lox does not support static methods
+        lines = """
+        class Foo {
+            init() {
+                print "Foo";
+            }
+        }
+        print Foo.init();
+        """
+        assert (
+            run_code_block(lines).err
+            == "Only instances have properties. in line [line7]\n"
+        )
+        assert run_code_block(lines).out == ""
+
     def test_class_print_this(self, run_code_block):
         lines = """
         class Egotist {
@@ -123,3 +140,42 @@ class TestClasses:
             == "[line 3] Error  at 'this' : Can't use 'this' outside of a class.\n"
         )
         assert run_code_block(lines).out == ""
+
+    def test_class_init(self, run_code_block):
+        lines = """
+        class Foo {
+          init() {
+            print this;
+          }
+        }
+
+        var foo = Foo();
+        print foo.init();
+        """
+        assert run_code_block(lines).err == ""
+        # Foo instance is printed 3 times, validated by jlox and clox:
+        # 1st print statement is the init itselve
+        # 2th is the print statement again, when running print foo.init()
+        # 3th print is the return value of the init, the init instance
+        assert run_code_block(lines).out == "Foo instance\nFoo instance\nFoo instance\n"
+
+    def test_class_init_print_value(self, run_code_block):
+        lines = """
+        class Appelflap {
+          init() {
+            print "Appelflappen";
+          }
+        }
+
+        var appelflap = Appelflap();
+        print appelflap.init();
+        """
+        assert run_code_block(lines).err == ""
+        # Foo instance is printed 3 times, validated by jlox and clox:
+        # 1st print statement is the init itselve
+        # 2th is the print statement again, when running print foo.init()
+        # 3th print is the return value of the init, the init instance
+        assert (
+            run_code_block(lines).out
+            == "Appelflappen\nAppelflappen\nAppelflap instance\n"
+        )

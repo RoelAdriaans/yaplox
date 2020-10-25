@@ -264,7 +264,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
         methods: Dict[str, YaploxFunction] = {}
 
         for method in stmt.methods:
-            function = YaploxFunction(method, self.environment)
+            function = YaploxFunction(
+                method, self.environment, method.name.lexeme == "init"
+            )
             methods[method.name.lexeme] = function
 
         klass = YaploxClass(stmt.name.lexeme, methods)
@@ -274,7 +276,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
         return self._evaluate(stmt.expression)
 
     def visit_function_stmt(self, stmt: Function) -> None:
-        function = YaploxFunction(stmt, self.environment)
+        function = YaploxFunction(stmt, self.environment, False)
         self.environment.define(stmt.name.lexeme, function)
 
     def visit_if_stmt(self, stmt: If) -> None:
