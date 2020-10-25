@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 from yaplox.environment import Environment
 from yaplox.stmt import Function
 from yaplox.yaplox_callable import YaploxCallable
+from yaplox.yaplox_instance import YaploxInstance
 from yaplox.yaplox_return_exception import YaploxReturnException
 
 
@@ -9,6 +12,11 @@ class YaploxFunction(YaploxCallable):
         super().__init__()
         self.closure = closure
         self.declaration = declaration
+
+    def bind(self, instance: YaploxInstance) -> YaploxFunction:
+        environment = Environment(self.closure)
+        environment.define("this", instance)
+        return YaploxFunction(self.declaration, environment)
 
     def call(self, interpreter, arguments):
         environment = Environment(self.closure)

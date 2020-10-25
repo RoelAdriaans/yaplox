@@ -14,6 +14,7 @@ from yaplox.expr import (
     Literal,
     Logical,
     Set,
+    This,
     Unary,
     Variable,
 )
@@ -141,6 +142,9 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._resolve_expression(expr.left)
         self._resolve_expression(expr.right)
 
+    def visit_this_expr(self, expr: This):
+        self._resolve_local(expr, expr.keyword)
+
     def visit_set_expr(self, expr: Set):
         self._resolve_expression(expr.value)
         self._resolve_expression(expr.obj)
@@ -162,12 +166,16 @@ class Resolver(ExprVisitor, StmtVisitor):
 
     def visit_class_stmt(self, stmt: Class):
         self._declare(stmt.name)
+        self._define(stmt.name)
+
+        self._begin_scope()
+        self.scopes[-1]["this"] = True
 
         for method in stmt.methods:
             declaration = FunctionType.METHOD
             self._resolve_function(method, declaration)
 
-        self._define(stmt.name)
+        self._end_scope()
 
     def visit_expression_stmt(self, stmt: Expression):
         self._resolve_expression(stmt.expression)

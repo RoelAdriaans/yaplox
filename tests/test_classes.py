@@ -55,3 +55,51 @@ class TestClasses:
         """
         assert run_code_block(lines).err == ""
         assert run_code_block(lines).out == "Crunch crunch crunch!\n"
+
+    def test_class_print_this(self, run_code_block):
+        lines = """
+        class Egotist {
+          speak() {
+            print this;
+          }
+        }
+
+        var method = Egotist().speak;
+        method();
+        """
+        assert run_code_block(lines).err == ""
+        assert run_code_block(lines).out == "Egotist instance\n"
+
+    def test_class_taste_cake(self, run_code_block):
+        lines = """
+            class Cake {
+              taste() {
+                var adjective = "delicious";
+                print "The " + this.flavor + " cake is " + adjective + "!";
+              }
+            }
+
+            var cake = Cake();
+            cake.flavor = "German chocolate";
+            cake.taste(); // Prints "The German chocolate cake is delicious!".
+        """
+        assert run_code_block(lines).err == ""
+        assert run_code_block(lines).out == "The German chocolate cake is delicious!\n"
+
+    def test_class_callback(self, run_code_block):
+        lines = """
+        class Thing {
+          getCallback() {
+            fun localFunction() {
+              print this;
+            }
+
+            return localFunction;
+          }
+        }
+
+        var callback = Thing().getCallback();
+        callback();
+        """
+        assert run_code_block(lines).err == ""
+        assert run_code_block(lines).out == "Thing instance\n"
