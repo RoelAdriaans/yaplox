@@ -1,4 +1,4 @@
-from typing import Any, List
+from typing import Any, Dict, List
 
 from structlog import get_logger
 
@@ -10,14 +10,18 @@ from yaplox.expr import (
     Call,
     Expr,
     ExprVisitor,
+    Get,
     Grouping,
     Literal,
     Logical,
+    Set,
+    This,
     Unary,
     Variable,
 )
 from yaplox.stmt import (
     Block,
+    Class,
     Expression,
     Function,
     If,
@@ -31,7 +35,9 @@ from yaplox.stmt import (
 from yaplox.token import Token
 from yaplox.token_type import TokenType
 from yaplox.yaplox_callable import YaploxCallable
+from yaplox.yaplox_class import YaploxClass
 from yaplox.yaplox_function import YaploxFunction
+from yaplox.yaplox_instance import YaploxInstance
 from yaplox.yaplox_return_exception import YaploxReturnException
 from yaplox.yaplox_runtime_error import YaploxRuntimeError
 
@@ -160,6 +166,13 @@ class Interpreter(ExprVisitor, StmtVisitor):
             )
         return function.call(self, arguments)
 
+    def visit_get_expr(self, expr: Get):
+        obj = self._evaluate(expr.obj)
+        if isinstance(obj, YaploxInstance):
+            return obj.get(expr.name)
+
+        raise YaploxRuntimeError(expr.name, "Only instances have properties.")
+
     def visit_grouping_expr(self, expr: Grouping):
         return self._evaluate(expr.expression)
 
@@ -175,6 +188,19 @@ class Interpreter(ExprVisitor, StmtVisitor):
             if not self._is_truthy(left):
                 return left
         return self._evaluate(expr.right)
+
+    def visit_set_expr(self, expr: Set):
+        obj = self._evaluate(expr.obj)
+
+        if not isinstance(obj, YaploxInstance):
+            raise YaploxRuntimeError(expr.name, "Only instances have fields.")
+
+        value = self._evaluate(expr.value)
+        obj.set(expr.name, value)
+        return value
+
+    def visit_this_expr(self, expr: This):
+        return self._look_up_variable(expr.keyword, expr)
 
     def visit_unary_expr(self, expr: Unary):
         right = self._evaluate(expr.right)
@@ -232,11 +258,25 @@ class Interpreter(ExprVisitor, StmtVisitor):
         return value
 
     # statement stuff
+    def visit_class_stmt(self, stmt: Class):
+        self.environment.define(stmt.name.lexeme, None)
+
+        methods: Dict[str, YaploxFunction] = {}
+
+        for method in stmt.methods:
+            function = YaploxFunction(
+                method, self.environment, method.name.lexeme == "init"
+            )
+            methods[method.name.lexeme] = function
+
+        klass = YaploxClass(stmt.name.lexeme, methods)
+        self.environment.assign(stmt.name, klass)
+
     def visit_expression_stmt(self, stmt: Expression) -> None:
         return self._evaluate(stmt.expression)
 
     def visit_function_stmt(self, stmt: Function) -> None:
-        function = YaploxFunction(stmt, self.environment)
+        function = YaploxFunction(stmt, self.environment, False)
         self.environment.define(stmt.name.lexeme, function)
 
     def visit_if_stmt(self, stmt: If) -> None:

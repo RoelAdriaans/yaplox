@@ -107,7 +107,7 @@ class Scanner:
         """ Scan tokens"""
         c = self._advance()
 
-        # In the orginal java implementation this is implemented with a switch
+        # In the original java implementation this is implemented with a switch
         # statement. Python does not have this construct (yet), the closest thing is an
         # dict:
 
@@ -154,7 +154,7 @@ class Scanner:
                 # An digit encountered, consume the number
                 self._number()
             elif c.isalpha() or c == "_":
-                # An letter encoutered
+                # An letter encountered
                 self._identifier()
             elif self.on_error:
                 # If we have an on_error callback, run this, otherwise raise the
@@ -183,7 +183,7 @@ class Scanner:
     def _add_token(self, token_type: TokenType, literal: Any = None):
         """
         In the java implementation this method is overloaded and depending on the
-        literal parameter beeing there, or not. Because python doesn't have this
+        literal parameter being there, or not. Because python doesn't have this
         construct the overloading is handled in the method itself. As it turns out,
         this is just the default value of '=None' for the 'literal' keyword.
 

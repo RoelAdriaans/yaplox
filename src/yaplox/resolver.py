@@ -3,15 +3,19 @@ from typing import Deque, List
 
 from structlog import get_logger
 
+from yaplox.class_type import ClassType
 from yaplox.expr import (
     Assign,
     Binary,
     Call,
     Expr,
     ExprVisitor,
+    Get,
     Grouping,
     Literal,
     Logical,
+    Set,
+    This,
     Unary,
     Variable,
 )
@@ -19,6 +23,7 @@ from yaplox.function_type import FunctionType
 from yaplox.interpreter import Interpreter
 from yaplox.stmt import (
     Block,
+    Class,
     Expression,
     Function,
     If,
@@ -40,6 +45,7 @@ class Resolver(ExprVisitor, StmtVisitor):
         self.scopes: Deque = deque()
         self.on_error = on_error
         self.current_function = FunctionType.NONE
+        self.current_class = ClassType.NONE
 
     def resolve(self, statements: List[Stmt]):
         self._resolve_statements(statements)
@@ -121,6 +127,9 @@ class Resolver(ExprVisitor, StmtVisitor):
         for argument in expr.arguments:
             self._resolve_expression(argument)
 
+    def visit_get_expr(self, expr: Get):
+        self._resolve_expression(expr.obj)
+
     def visit_grouping_expr(self, expr: Grouping):
         self._resolve_expression(expr.expression)
 
@@ -134,6 +143,16 @@ class Resolver(ExprVisitor, StmtVisitor):
     def visit_logical_expr(self, expr: Logical):
         self._resolve_expression(expr.left)
         self._resolve_expression(expr.right)
+
+    def visit_this_expr(self, expr: This):
+        if self.current_class == ClassType.NONE:
+            self.on_error(expr.keyword, "Can't use 'this' outside of a class.")
+
+        self._resolve_local(expr, expr.keyword)
+
+    def visit_set_expr(self, expr: Set):
+        self._resolve_expression(expr.value)
+        self._resolve_expression(expr.obj)
 
     def visit_unary_expr(self, expr: Unary):
         self._resolve_expression(expr.right)
@@ -149,6 +168,27 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._begin_scope()
         self._resolve_statements(stmt.statements)
         self._end_scope()
+
+    def visit_class_stmt(self, stmt: Class):
+        enclosing_class = self.current_class
+        self.current_class = ClassType.CLASS
+
+        self._declare(stmt.name)
+        self._define(stmt.name)
+
+        self._begin_scope()
+        self.scopes[-1]["this"] = True
+
+        for method in stmt.methods:
+            declaration = FunctionType.METHOD
+            if method.name.lexeme == "init":
+                declaration = FunctionType.INITIALIZER
+
+            self._resolve_function(method, declaration)
+
+        self._end_scope()
+
+        self.current_class = enclosing_class
 
     def visit_expression_stmt(self, stmt: Expression):
         self._resolve_expression(stmt.expression)
@@ -173,6 +213,8 @@ class Resolver(ExprVisitor, StmtVisitor):
             self.on_error(stmt.keyword, "Can't return from top-level code.")
 
         if stmt.value:
+            if self.current_function == FunctionType.INITIALIZER:
+                self.on_error(stmt.keyword, "Can't return a value from an initializer.")
             self._resolve_expression(stmt.value)
 
     def visit_var_stmt(self, stmt: Var):
