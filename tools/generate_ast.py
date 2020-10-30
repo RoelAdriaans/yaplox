@@ -41,7 +41,8 @@ class GenerateAst:
             base_name="Stmt",
             types=[
                 "Block      : List<Stmt> statements",
-                "Class      : Token name, List<Function> methods",
+                "Class      :  Token name, Optional[Variable] superclass, "
+                "List<Function> methods",
                 "Expression : Expr expression",
                 "Function   : Token name, List<Token> params, List<Stmt> body",
                 "If      : Expr condition, Stmt thenBranch, Optional[Stmt] elseBranch",
@@ -52,7 +53,7 @@ class GenerateAst:
             ],
             imports={
                 "typing": ["List", "Optional"],
-                "yaplox.expr": ["Expr"],
+                "yaplox.expr": ["Expr", "Variable"],
                 "yaplox.token": ["Token"],
             },
         )

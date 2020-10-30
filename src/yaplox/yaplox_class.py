@@ -27,8 +27,14 @@ class YaploxClass(YaploxCallable):
         else:
             return 0
 
-    def __init__(self, name: str, methods: Dict[str, YaploxFunction]):
+    def __init__(
+        self,
+        name: str,
+        superclass: Optional[YaploxClass],
+        methods: Dict[str, YaploxFunction],
+    ):
         self.name = name
+        self.superclass = superclass
         self.methods = methods
 
     def __repr__(self):
@@ -38,4 +44,9 @@ class YaploxClass(YaploxCallable):
         try:
             return self.methods[name]
         except KeyError:
-            return None
+            pass
+
+        if self.superclass:
+            return self.superclass.find_method(name)
+
+        return None

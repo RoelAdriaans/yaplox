@@ -259,6 +259,14 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     # statement stuff
     def visit_class_stmt(self, stmt: Class):
+        superclass = None
+        if stmt.superclass is not None:
+            superclass = self._evaluate(stmt.superclass)
+            if not isinstance(superclass, YaploxClass):
+                raise YaploxRuntimeError(
+                    stmt.superclass.name, "Superclass must be a class."
+                )
+
         self.environment.define(stmt.name.lexeme, None)
 
         methods: Dict[str, YaploxFunction] = {}
@@ -269,7 +277,9 @@ class Interpreter(ExprVisitor, StmtVisitor):
             )
             methods[method.name.lexeme] = function
 
-        klass = YaploxClass(stmt.name.lexeme, methods)
+        klass = YaploxClass(
+            name=stmt.name.lexeme, superclass=superclass, methods=methods
+        )
         self.environment.assign(stmt.name, klass)
 
     def visit_expression_stmt(self, stmt: Expression) -> None:

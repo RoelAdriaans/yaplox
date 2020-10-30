@@ -6,7 +6,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-from yaplox.expr import Expr
+from yaplox.expr import Expr, Variable
 from yaplox.token import Token
 
 
@@ -66,8 +66,11 @@ class Block(Stmt):
 
 
 class Class(Stmt):
-    def __init__(self, name: Token, methods: List[Function]):
+    def __init__(
+        self, name: Token, superclass: Optional[Variable], methods: List[Function]
+    ):
         self.name = name
+        self.superclass = superclass
         self.methods = methods
 
     def accept(self, visitor: StmtVisitor):
