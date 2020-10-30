@@ -33,3 +33,58 @@ class TestClassesInheretance:
 
         assert run_code_block(lines).err == ""
         assert run_code_block(lines).out == "Fry until golden brown.\n"
+
+    def test_class_call_super(self, run_code_block):
+        lines = """
+        class Doughnut {
+          cook() {
+            print "Fry until golden brown.";
+          }
+        }
+
+        class BostonCream < Doughnut {
+          cook() {
+            super.cook();
+            print "Pipe full of custard and coat with chocolate.";
+          }
+        }
+
+        BostonCream().cook();
+        // Prints:
+        // Fry until golden brown.
+        // Pipe full of custard and coat with chocolate."""
+
+        captured = run_code_block(lines)
+
+        assert captured.err == ""
+        assert (
+            captured.out == "Fry until golden brown.\n"
+            "Pipe full of custard and coat with chocolate.\n"
+        )
+
+    def test_multiple_inherit(self, run_code_block):
+        lines = """
+        class A {
+            method() {
+                print "A method";
+            }
+        }
+
+        class B < A {
+            method() {
+                print "B method";
+            }
+
+            test() {
+                super.method();
+            }
+        }
+
+        class C < B {}
+
+        C().test();
+        """
+        captured = run_code_block(lines)
+
+        assert captured.err == ""
+        assert captured.out == "A method\n"

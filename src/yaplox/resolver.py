@@ -15,6 +15,7 @@ from yaplox.expr import (
     Literal,
     Logical,
     Set,
+    Super,
     This,
     Unary,
     Variable,
@@ -154,6 +155,9 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._resolve_expression(expr.value)
         self._resolve_expression(expr.obj)
 
+    def visit_super_expr(self, expr: Super):
+        self._resolve_local(expr, expr.keyword)
+
     def visit_unary_expr(self, expr: Unary):
         self._resolve_expression(expr.right)
 
@@ -182,6 +186,10 @@ class Resolver(ExprVisitor, StmtVisitor):
         if stmt.superclass is not None:
             self._resolve_expression(stmt.superclass)
 
+        if stmt.superclass is not None:
+            self._begin_scope()
+            self.scopes[-1]["super"] = True
+
         self._begin_scope()
         self.scopes[-1]["this"] = True
 
@@ -193,6 +201,9 @@ class Resolver(ExprVisitor, StmtVisitor):
             self._resolve_function(method, declaration)
 
         self._end_scope()
+
+        if stmt.superclass is not None:
+            self._end_scope()
 
         self.current_class = enclosing_class
 

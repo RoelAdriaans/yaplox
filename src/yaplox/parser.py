@@ -10,6 +10,7 @@ from yaplox.expr import (
     Literal,
     Logical,
     Set,
+    Super,
     This,
     Unary,
     Variable,
@@ -370,6 +371,15 @@ class Parser:
 
         if self._match(TokenType.NUMBER, TokenType.STRING):
             return Literal(self._previous().literal)
+
+        if self._match(TokenType.SUPER):
+            keyword = self._previous()
+            self._consume(TokenType.DOT, "Expect '.' after 'super'.")
+            method = self._consume(
+                TokenType.IDENTIFIER, "Expect superclass method name."
+            )
+
+            return Super(keyword, method)
 
         if self._match(TokenType.THIS):
             return This(self._previous())

@@ -15,6 +15,7 @@ from yaplox.expr import (
     Literal,
     Logical,
     Set,
+    Super,
     This,
     Unary,
     Variable,
@@ -199,6 +200,21 @@ class Interpreter(ExprVisitor, StmtVisitor):
         obj.set(expr.name, value)
         return value
 
+    def visit_super_expr(self, expr: Super):
+        distance = self.locals[expr]
+        superclass: YaploxClass = self.environment.get_at(
+            distance=distance, name="super"
+        )
+        obj = self.environment.get_at(distance=distance - 1, name="this")
+        method = superclass.find_method(expr.method.lexeme)
+
+        # Check that we have a super method
+        if method is None:
+            raise YaploxRuntimeError(
+                expr.method, f"Undefined property '{expr.method.name}'."
+            )
+        return method.bind(obj)
+
     def visit_this_expr(self, expr: This):
         return self._look_up_variable(expr.keyword, expr)
 
@@ -269,6 +285,10 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
         self.environment.define(stmt.name.lexeme, None)
 
+        if stmt.superclass is not None:
+            self.environment = Environment(self.environment)
+            self.environment.define("super", superclass)
+
         methods: Dict[str, YaploxFunction] = {}
 
         for method in stmt.methods:
@@ -280,6 +300,10 @@ class Interpreter(ExprVisitor, StmtVisitor):
         klass = YaploxClass(
             name=stmt.name.lexeme, superclass=superclass, methods=methods
         )
+
+        if stmt.superclass is not None:
+            self.environment = self.environment.enclosing
+
         self.environment.assign(stmt.name, klass)
 
     def visit_expression_stmt(self, stmt: Expression) -> None:
