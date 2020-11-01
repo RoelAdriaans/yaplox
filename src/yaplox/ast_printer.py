@@ -9,6 +9,7 @@ from yaplox.expr import (
     Literal,
     Logical,
     Set,
+    Super,
     This,
     Unary,
     Variable,
@@ -40,6 +41,9 @@ class AstPrinter(ExprVisitor):
         raise NotImplementedError
 
     def visit_set_expr(self, expr: Set):
+        pass
+
+    def visit_super_expr(self, expr: Super):
         pass
 
     def visit_this_expr(self, expr: This):

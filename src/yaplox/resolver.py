@@ -15,6 +15,7 @@ from yaplox.expr import (
     Literal,
     Logical,
     Set,
+    Super,
     This,
     Unary,
     Variable,
@@ -154,6 +155,16 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._resolve_expression(expr.value)
         self._resolve_expression(expr.obj)
 
+    def visit_super_expr(self, expr: Super):
+        if self.current_class == ClassType.NONE:
+            self.on_error(expr.keyword, "Can't use 'super' outside of a class.")
+        elif self.current_class != ClassType.SUBCLASS:
+            self.on_error(
+                expr.keyword, "Can't use 'super' in a class with no superclass."
+            )
+
+        self._resolve_local(expr, expr.keyword)
+
     def visit_unary_expr(self, expr: Unary):
         self._resolve_expression(expr.right)
 
@@ -176,6 +187,17 @@ class Resolver(ExprVisitor, StmtVisitor):
         self._declare(stmt.name)
         self._define(stmt.name)
 
+        if stmt.superclass and stmt.name.lexeme == stmt.superclass.name.lexeme:
+            self.on_error(stmt.superclass.name, "A class can't inherit from itself.")
+
+        if stmt.superclass is not None:
+            self.current_class = ClassType.SUBCLASS
+            self._resolve_expression(stmt.superclass)
+
+        if stmt.superclass is not None:
+            self._begin_scope()
+            self.scopes[-1]["super"] = True
+
         self._begin_scope()
         self.scopes[-1]["this"] = True
 
@@ -187,6 +209,9 @@ class Resolver(ExprVisitor, StmtVisitor):
             self._resolve_function(method, declaration)
 
         self._end_scope()
+
+        if stmt.superclass is not None:
+            self._end_scope()
 
         self.current_class = enclosing_class
 

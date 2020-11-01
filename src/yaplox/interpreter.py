@@ -15,6 +15,7 @@ from yaplox.expr import (
     Literal,
     Logical,
     Set,
+    Super,
     This,
     Unary,
     Variable,
@@ -199,6 +200,21 @@ class Interpreter(ExprVisitor, StmtVisitor):
         obj.set(expr.name, value)
         return value
 
+    def visit_super_expr(self, expr: Super):
+        distance = self.locals[expr]
+        superclass: YaploxClass = self.environment.get_at(
+            distance=distance, name="super"
+        )
+        obj = self.environment.get_at(distance=distance - 1, name="this")
+        method = superclass.find_method(expr.method.lexeme)
+
+        # Check that we have a super method
+        if method is None:
+            raise YaploxRuntimeError(
+                expr.method, f"Undefined property '{expr.method.lexeme}'."
+            )
+        return method.bind(obj)
+
     def visit_this_expr(self, expr: This):
         return self._look_up_variable(expr.keyword, expr)
 
@@ -259,7 +275,19 @@ class Interpreter(ExprVisitor, StmtVisitor):
 
     # statement stuff
     def visit_class_stmt(self, stmt: Class):
+        superclass = None
+        if stmt.superclass is not None:
+            superclass = self._evaluate(stmt.superclass)
+            if not isinstance(superclass, YaploxClass):
+                raise YaploxRuntimeError(
+                    stmt.superclass.name, "Superclass must be a class."
+                )
+
         self.environment.define(stmt.name.lexeme, None)
+
+        if stmt.superclass is not None:
+            self.environment = Environment(self.environment)
+            self.environment.define("super", superclass)
 
         methods: Dict[str, YaploxFunction] = {}
 
@@ -269,7 +297,13 @@ class Interpreter(ExprVisitor, StmtVisitor):
             )
             methods[method.name.lexeme] = function
 
-        klass = YaploxClass(stmt.name.lexeme, methods)
+        klass = YaploxClass(
+            name=stmt.name.lexeme, superclass=superclass, methods=methods
+        )
+
+        if stmt.superclass is not None:
+            self.environment = self.environment.enclosing  # type: ignore
+
         self.environment.assign(stmt.name, klass)
 
     def visit_expression_stmt(self, stmt: Expression) -> None:

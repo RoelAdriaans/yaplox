@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.10] - 2020-11-01
+
+### Added
+
+- Completing chapter 13
+- Inheritance works, circular inheritance is catched, calling super
+- Added some warnings for super outside a class
+
 ## [0.0.9] - 2020-10-25
 
 ### Added
