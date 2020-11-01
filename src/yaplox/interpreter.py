@@ -211,7 +211,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
         # Check that we have a super method
         if method is None:
             raise YaploxRuntimeError(
-                expr.method, f"Undefined property '{expr.method.name}'."
+                expr.method, f"Undefined property '{expr.method.lexeme}'."
             )
         return method.bind(obj)
 
@@ -302,7 +302,7 @@ class Interpreter(ExprVisitor, StmtVisitor):
         )
 
         if stmt.superclass is not None:
-            self.environment = self.environment.enclosing
+            self.environment = self.environment.enclosing  # type: ignore
 
         self.environment.assign(stmt.name, klass)
 

@@ -88,3 +88,31 @@ class TestClassesInheretance:
 
         assert captured.err == ""
         assert captured.out == "A method\n"
+
+    def test_invalid_super(self, run_code_block):
+        lines = """
+            class Eclair {
+              cook() {
+                super.cook();
+                print "Pipe full of crème pâtissière.";
+              }
+            }
+        """
+        captured = run_code_block(lines)
+
+        assert (
+            captured.err == "[line 4] Error  at 'super' : "
+            "Can't use 'super' in a class with no superclass.\n"
+        )
+
+        assert captured.out == ""
+
+    def test_invalid_super_not_even_a_class(self, run_code_block):
+        lines = "super.notEvenInAClass();"
+        captured = run_code_block(lines)
+
+        assert (
+            captured.err
+            == "[line 1] Error  at 'super' : Can't use 'super' outside of a class.\n"
+        )
+        assert captured.out == ""
