@@ -21,7 +21,7 @@ pytest-mock = "^3.4.0"
 lxml = "^4.6.2"
 pre-commit = "^2.9.3"
 black = "^20.8b1"
-isort = "^5.6.4"
+isort = "^5.7.0"
 
 
 [tool.poetry.scripts]
