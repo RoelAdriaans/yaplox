@@ -294,7 +294,7 @@ pytest-cover = "*"
 
 [[package]]
 name = "pytest-mock"
-version = "3.4.0"
+version = "3.5.0"
 description = "Thin-wrapper around the mock package for easier use with pytest"
 category = "dev"
 optional = false
@@ -414,7 +414,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "c632e377c2bd371257f99b08b4bbf19cf45999ecaec7cdadbdda2271ea123788"
+content-hash = "dec63bd0e916e9d4d4339abe1b2b0dc763027f650b55328cdef0c7700279a2b5"
 
 [metadata.files]
 appdirs = [
@@ -591,8 +591,8 @@ pytest-coverage = [
     {file = "pytest_coverage-0.0-py2.py3-none-any.whl", hash = "sha256:dedd084c5e74d8e669355325916dc011539b190355021b037242514dee546368"},
 ]
 pytest-mock = [
-    {file = "pytest-mock-3.4.0.tar.gz", hash = "sha256:c3981f5edee6c4d1942250a60d9b39d38d5585398de1bfce057f925bdda720f4"},
-    {file = "pytest_mock-3.4.0-py3-none-any.whl", hash = "sha256:c0fc979afac4aaba545cbd01e9c20736eb3fefb0a066558764b07d3de8f04ed3"},
+    {file = "pytest-mock-3.5.0.tar.gz", hash = "sha256:4992db789175540d40a193bc60e987b1e69f1a989adad525a44e581c82149b14"},
+    {file = "pytest_mock-3.5.0-py3-none-any.whl", hash = "sha256:f9d77233b3af6c71cec6a8b8b5e9e9a2effd1bb6ff56e9ace72541ff6843ac81"},
 ]
 pyyaml = [
     {file = "PyYAML-5.3.1-cp27-cp27m-win32.whl", hash = "sha256:74809a57b329d6cc0fdccee6318f44b9b8649961fa73144a98735b0aaf029f1f"},
