@@ -332,7 +332,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "structlog"
-version = "20.2.0"
+version = "21.1.0"
 description = "Structured Logging for Python"
 category = "main"
 optional = false
@@ -410,7 +410,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "33a4aaef8a36cec96695df99e4dd0d51f594c1cf8686849fdd45abcc5447a583"
+content-hash = "ca0aa6d7bee1393531f0c52718496ab43349fc33a7f6d2b56fcf680e9edf4d82"
 
 [metadata.files]
 appdirs = [
@@ -639,8 +639,8 @@ six = [
     {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
 ]
 structlog = [
-    {file = "structlog-20.2.0-py2.py3-none-any.whl", hash = "sha256:33dd6bd5f49355e52c1c61bb6a4f20d0b48ce0328cc4a45fe872d38b97a05ccd"},
-    {file = "structlog-20.2.0.tar.gz", hash = "sha256:af79dfa547d104af8d60f86eac12fb54825f54a46bc998e4504ef66177103174"},
+    {file = "structlog-21.1.0-py2.py3-none-any.whl", hash = "sha256:62f06fc0ee32fb8580f0715eea66cb87271eb7efb0eaf9af6b639cba8981de47"},
+    {file = "structlog-21.1.0.tar.gz", hash = "sha256:d9d2d890532e8db83c6977a2a676fb1889922ff0c26ad4dc0ecac26f9fafbc57"},
 ]
 toml = [
     {file = "toml-0.10.1-py2.py3-none-any.whl", hash = "sha256:bda89d5935c2eac546d648028b9901107a595863cb36bae0c73ac804a9b4ce88"},

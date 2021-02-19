@@ -8,7 +8,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-structlog = "^20.2.0"
+structlog = "^21.1.0"
 colorama = "^0.4.4"
 classyconf = "^0.4.0"
 
