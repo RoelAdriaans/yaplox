@@ -60,11 +60,11 @@ python-versions = ">=3.6.1"
 
 [[package]]
 name = "classyconf"
-version = "0.4.0"
+version = "0.5.2"
 description = "Extensible library for separation of settings from code."
 category = "main"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7,<4.0"
 
 [[package]]
 name = "click"
@@ -410,7 +410,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "33a4aaef8a36cec96695df99e4dd0d51f594c1cf8686849fdd45abcc5447a583"
+content-hash = "65d95ab096141e649ea9506246a3128d65074f14fac3d545dc1491e4f51996ba"
 
 [metadata.files]
 appdirs = [
@@ -433,7 +433,8 @@ cfgv = [
     {file = "cfgv-3.2.0.tar.gz", hash = "sha256:cf22deb93d4bcf92f345a5c3cd39d3d41d6340adc60c78bbbd6588c384fda6a1"},
 ]
 classyconf = [
-    {file = "classyconf-0.4.0.tar.gz", hash = "sha256:b2e1ac143dea6a31142dddc00af23c8fadb19a35414e59e073d3274effa74694"},
+    {file = "classyconf-0.5.2-py3-none-any.whl", hash = "sha256:d8a3f3d3c8d0ef898772b87369699bacc8c9e910102f64adec4c95e7cfc5428d"},
+    {file = "classyconf-0.5.2.tar.gz", hash = "sha256:b04c7e7de2d00feefb85dbe1b72c4ab932f6135cdb8e6eccd73f7ccfa5fd63a9"},
 ]
 click = [
     {file = "click-7.1.2-py2.py3-none-any.whl", hash = "sha256:dacca89f4bfadd5de3d7489b7c8a566eee0d3676333fbb50030263894c38c0dc"},

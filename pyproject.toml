@@ -10,7 +10,7 @@ readme = "README.md"
 python = "^3.8"
 structlog = "^20.2.0"
 colorama = "^0.4.4"
-classyconf = "^0.4.0"
+classyconf = "^0.5.2"
 
 
 [tool.poetry.dev-dependencies]
